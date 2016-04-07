@@ -1,3 +1,4 @@
+load './bundle_tasks.rake'
 extend FastlaneRake
 
 VERBOSE = FastlaneRake::VERBOSE
@@ -12,7 +13,7 @@ namespace :bundle do
   task :build_tools => [
     FastlaneRake.ruby_task,
     FastlaneRake.fastlane_task,
-    FastlaneRake.cocoapods_task
+    FastlaneRake.cocoapods_task,
     FastlaneRake.bundle_env_task,
     FastlaneRake.cacert_task,
   ].concat(FastlaneRake.install_gems_tasks)
