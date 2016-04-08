@@ -34,7 +34,6 @@ namespace :bundle do
     remove_if_existant.call *Dir.glob(File.join(BUNDLE_DESTROOT, 'lib/ruby/gems/*/cache'))
     remove_if_existant.call *Dir.glob(File.join(BUNDLE_DESTROOT, '**/man[0-9]'))
     remove_if_existant.call *Dir.glob(File.join(BUNDLE_DESTROOT, '**/.DS_Store'))
-    remove_if_existant.call File.join(BUNDLE_DESTROOT, 'include/subversion-1')
     remove_if_existant.call File.join(BUNDLE_DESTROOT, 'man')
     remove_if_existant.call File.join(BUNDLE_DESTROOT, 'share/gitweb')
     remove_if_existant.call File.join(BUNDLE_DESTROOT, 'share/man')
@@ -47,6 +46,11 @@ namespace :bundle do
       puts "After clean:"
       sh "du -hs #{BUNDLE_DESTROOT}"
     end
+  end
+
+  desc 'Copy the fastlane shim into the root of the bundle.'
+  file "#{DESTROOT}/fastlane" do
+    cp 'fastlane_shim', "#{DESTROOT}/fastlane"
   end
 
   desc "Creates a VERSION file in the destroot folder"
@@ -86,13 +90,8 @@ namespace :bundle do
     execute 'Test', [BUNDLE_ENV, 'fastlane', 'actions']
   end
 
-  desc "Ensure Submodules are downloaded"
-  task :submodules do
-    execute 'Submodules', ['/usr/bin/git', 'submodule', 'update', '--init', '--recursive']
-  end
-
   desc "Build complete dist bundle"
-  task :build => [:build_tools, :remove_unneeded_files, :stamp_version]
+  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, "#{DESTROOT}/fastlane"]
 
   namespace :clean do
     task :build do

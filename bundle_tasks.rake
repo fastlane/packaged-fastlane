@@ -7,8 +7,6 @@ module FastlaneRake
     $stderr.puts "[#{Time.now.strftime('%T')}] [#{group}] #{message}"
   end
 
-  GEM_HOME = File.join(BUNDLE_DESTROOT, 'lib/ruby/gems', RUBY__VERSION.sub(/\d+$/, '0'))
-
   def self.install_gem(name, version = nil, group = 'Gems')
     execute group, [BUNDLE_ENV, 'gem', 'install', name, ("--version=#{version}" if version), '--no-document', '--env-shebang'].compact
   end
