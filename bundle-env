@@ -12,10 +12,6 @@ unset GEM_CACHE
 BIN=$(cd "$(dirname "$0")"; pwd)
 PREFIX=$(dirname $BIN)
 export PATH=$BIN:/usr/bin:/bin:/usr/sbin:/sbin
-export PYTHONPATH=$PREFIX/lib/python2.7/site-packages
-export GIT_SSL_CAINFO=$PREFIX/share/cacert.pem
-export GIT_TEMPLATE_DIR=$PREFIX/share/git-core/templates
-export GIT_EXEC_PATH=$PREFIX/libexec/git-core
 export LANG=en_GB.UTF-8
 export LC_CTYPE=UTF-8
 export SSL_CERT_FILE=$PREFIX/share/cacert.pem
