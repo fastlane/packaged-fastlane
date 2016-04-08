@@ -87,7 +87,7 @@ module FastlaneRake
 
   OPENSSL_VERSION = '1.0.2'
   OPENSSL_PATCH = 'g'
-  OPENSSL_URL = "https://www.openssl.org/source/old/#{OPENSSL_VERSION}/openssl-#{OPENSSL_VERSION}#{OPENSSL_PATCH}.tar.gz"
+  OPENSSL_URL = "https://www.openssl.org/source/openssl-#{OPENSSL_VERSION}#{OPENSSL_PATCH}.tar.gz"
 
   NCURSES_VERSION = '5.9'
   NCURSES_URL = "http://ftpmirror.gnu.org/ncurses/ncurses-#{NCURSES_VERSION}.tar.gz"
