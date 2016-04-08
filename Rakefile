@@ -14,6 +14,7 @@ namespace :bundle do
     FastlaneRake.ruby_task,
     FastlaneRake.fastlane_task,
     FastlaneRake.cocoapods_task,
+    FastlaneRake.pry_task,
     FastlaneRake.bundle_env_task,
     FastlaneRake.cacert_task,
   ].concat(FastlaneRake.install_gems_tasks)
@@ -37,10 +38,6 @@ namespace :bundle do
     remove_if_existant.call File.join(BUNDLE_DESTROOT, 'man')
     remove_if_existant.call File.join(BUNDLE_DESTROOT, 'share/gitweb')
     remove_if_existant.call File.join(BUNDLE_DESTROOT, 'share/man')
-    # Remove all uncompiled `py` files.
-    Dir.glob(File.join(BUNDLE_DESTROOT, 'lib/python*/**/*.pyc')).each do |pyc|
-      remove_if_existant.call pyc[0..-2]
-    end
     # TODO clean Ruby stdlib
     if VERBOSE
       puts "After clean:"
@@ -51,6 +48,11 @@ namespace :bundle do
   desc 'Copy the fastlane shim into the root of the bundle.'
   file "#{DESTROOT}/fastlane" do
     cp 'fastlane_shim', "#{DESTROOT}/fastlane"
+  end
+
+  desc 'Setup CocoaPods master repo'
+  file "~/.cocoapods/repos/master" do
+    execute 'CocoaPods', [BUNDLE_ENV, 'pod', 'setup']
   end
 
   desc "Creates a VERSION file in the destroot folder"
@@ -96,7 +98,6 @@ namespace :bundle do
   namespace :clean do
     task :build do
       rm_rf WORKBENCH_DIR
-      rm "app/CPReflectionService/libruby+exts.a" if File.exists? "app/CPReflectionService/libruby+exts.a"
     end
 
     task :downloads do

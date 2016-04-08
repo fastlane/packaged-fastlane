@@ -258,6 +258,18 @@ module FastlaneRake
   end
 
   # ------------------------------------------------------------------------------
+  # Pry Gems
+  # ------------------------------------------------------------------------------
+
+  @@installed_pry_bin = File.join(BUNDLE_DESTROOT, 'bin/pry')
+  file @@installed_pry_bin => rubygems_update_dir do
+    install_gem 'pry'
+  end
+  def self.pry_task
+    @@installed_pry_bin
+  end
+
+  # ------------------------------------------------------------------------------
   # Third-party gems
   # ------------------------------------------------------------------------------
 

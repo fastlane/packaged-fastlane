@@ -86,7 +86,7 @@ module FastlaneRake
   ZLIB_URL = "http://zlib.net/zlib-#{ZLIB_VERSION}.tar.gz"
 
   OPENSSL_VERSION = '1.0.2'
-  OPENSSL_PATCH = 'd'
+  OPENSSL_PATCH = 'g'
   OPENSSL_URL = "https://www.openssl.org/source/old/#{OPENSSL_VERSION}/openssl-#{OPENSSL_VERSION}#{OPENSSL_PATCH}.tar.gz"
 
   NCURSES_VERSION = '5.9'
