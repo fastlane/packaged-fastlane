@@ -142,40 +142,6 @@ module FastlaneRake
   end
 
   # ------------------------------------------------------------------------------
-  # ncurses
-  # ------------------------------------------------------------------------------
-
-  ncurses_tasks = NCursesTasks.define do |t|
-    t.url            = NCURSES_URL
-    t.artefact_file  = 'lib/libncurses.a'
-    t.installed_file = 'lib/libncurses.a'
-    t.prefix         = DEPENDENCIES_PREFIX
-    t.configure      = %w{ --without-shared --enable-getcap  --with-ticlib --with-termlib --disable-leaks --without-debug --enable-pc-files --with-pkg-config }
-    t.dependencies   = [@@installed_pkg_config]
-  end
-
-  @@installed_ncurses = ncurses_tasks.installed_path
-  def self.ncurses_tasks
-    @@installed_ncurses
-  end
-  # ------------------------------------------------------------------------------
-  # Readline
-  # ------------------------------------------------------------------------------
-
-  readline_tasks = BundleDependencyTasks.define do |t|
-    t.url            = READLINE_URL
-    t.artefact_file  = 'libreadline.a'
-    t.installed_file = 'lib/libreadline.a'
-    t.prefix         = DEPENDENCIES_PREFIX
-    t.configure      = %w{ --disable-shared --with-curses }
-    t.dependencies   = [@@installed_pkg_config, @@installed_ncurses]
-  end
-
-  @@installed_readline = readline_tasks.installed_path
-  def self.readline_tasks
-    @@installed_readline
-  end
-  # ------------------------------------------------------------------------------
   # Ruby
   # ------------------------------------------------------------------------------
 
