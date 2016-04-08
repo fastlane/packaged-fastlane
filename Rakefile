@@ -95,6 +95,14 @@ namespace :bundle do
   desc "Build complete dist bundle"
   task :build => [:build_tools, :remove_unneeded_files, :stamp_version, "#{DESTROOT}/fastlane"]
 
+  desc "Compress #{DESTROOT} into a zipfile."
+  file "#{DESTROOT}.zip" do
+    execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', "#{DESTROOT}", "#{DESTROOT}.zip"]
+  end
+
+  desc "Bundle the whole bundle"
+  task :bundle => [:build, "#{DESTROOT}.zip"]
+
   namespace :clean do
     task :build do
       rm_rf WORKBENCH_DIR
