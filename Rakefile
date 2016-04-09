@@ -45,11 +45,6 @@ namespace :bundle do
     end
   end
 
-  desc 'Copy the fastlane shim into the root of the bundle.'
-  file "#{DESTROOT}/fastlane" do
-    cp 'fastlane_shim', "#{DESTROOT}/fastlane"
-  end
-
   desc 'Setup CocoaPods master repo'
   file "~/.cocoapods/repos/master" do
     execute 'CocoaPods', [BUNDLE_ENV, 'pod', 'setup']
@@ -92,16 +87,26 @@ namespace :bundle do
     execute 'Test', [BUNDLE_ENV, 'fastlane', 'actions']
   end
 
-  desc "Build complete dist bundle"
-  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, "#{DESTROOT}/fastlane"]
+  desc "Copy the fastlane shim into #{DESTROOT}."
+  file "#{DESTROOT}/fastlane" do
+    cp 'fastlane_shim', "#{DESTROOT}/fastlane"
+  end
 
-  desc "Compress #{DESTROOT} into a zipfile."
-  file "#{DESTROOT}.zip" do
-    execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', "#{DESTROOT}", "#{DESTROOT}.zip"]
+  desc "Copy the installable fastlane shim into the root of the bundle."
+  file "bundle/fastlane"  do
+    cp 'fastlane_bin', 'bundle/fastlane'
+  end
+
+  desc "Build complete dist bundle"
+  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, "#{DESTROOT}/fastlane", "bundle/fastlane"]
+
+  desc "Compress the bundle into a zipfile for distribution"
+  file "bundle.zip" do
+    execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', "bundle", "bundle.zip"]
   end
 
   desc "Bundle the whole bundle"
-  task :bundle => [:build, "#{DESTROOT}.zip"]
+  task :bundle => [:build, "bundle.zip"]
 
   namespace :clean do
     task :build do
@@ -115,6 +120,9 @@ namespace :bundle do
     task :destroot do
       rm_rf DESTROOT
     end
+
+    desc "Clean build leftovers"
+    task :leftovers => [:build, :downloads]
 
     desc "Clean build and destroot artefacts"
     task :artefacts => [:build, :destroot]

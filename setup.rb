@@ -33,7 +33,7 @@ module FastlaneRake
   PKG_DIR = 'pkg'
   DOWNLOAD_DIR = 'downloads'
   WORKBENCH_DIR = 'workbench'
-  DESTROOT = 'destroot'
+  DESTROOT = 'bundle/fastlane_lib'
   BUNDLE_DESTROOT = File.join(DESTROOT, 'bundle')
   DEPENDENCIES_DESTROOT = File.join(DESTROOT, 'dependencies')
 
