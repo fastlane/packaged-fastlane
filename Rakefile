@@ -108,8 +108,15 @@ namespace :bundle do
     execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', FULL_BUNDLE_PATH, ZIPPED_BUNDLE]
   end
 
+  desc "Move #{ZIPPED_BUNDLE} to $CIRCLE_ARTIFACTS"
+  file "$CIRCLE_ARTIFACTS/#{ZIPPED_BUNDLE}" do
+    cp_r ZIPPED_BUNDLE, "$CIRCLE_ARTIFACTS/#{ZIPPED_BUNDLE}"
+  end
+
   desc "Bundle the whole bundle"
   task :bundle => [:build, ZIPPED_BUNDLE]
+
+  task :create_bundle => [:bundle, "$CIRCLE_ARTIFACTS/#{ZIPPED_BUNDLE}"]
 
   namespace :clean do
     task :workbench do
