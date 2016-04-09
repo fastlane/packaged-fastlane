@@ -1,5 +1,5 @@
 machine:
   xcode:
     version: "7.3"
-general:
+deployment:
   - rake bundle:create_bundle
