@@ -3,4 +3,4 @@ machine:
     version: "7.3"
 test:
   override:
-    - rake bundle:create_bundle
+    - rake bundle:ci_bundle --trace

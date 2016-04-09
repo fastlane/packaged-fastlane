@@ -116,7 +116,8 @@ namespace :bundle do
   desc "Bundle the whole bundle"
   task :bundle => [:build, ZIPPED_BUNDLE]
 
-  task :create_bundle => [:bundle, "$CIRCLE_ARTIFACTS/#{ZIPPED_BUNDLE}"]
+  desc "Create and save the bundle for CI."
+  task :ci_bundle => [:bundle, "$CIRCLE_ARTIFACTS/#{ZIPPED_BUNDLE}"]
 
   namespace :clean do
     task :workbench do
