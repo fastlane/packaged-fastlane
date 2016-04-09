@@ -7,6 +7,8 @@ module FastlaneRake
   # it can make assumptions that removing `BUNDLED_ENV_VERSION = `
   # from the first line will get the version.
 
+  FASTLANE_GEM_VERSION = ENV['FASTLANE_GEM_VERSION'] || '1.81.0'
+
   VERBOSE = !!RakeFileUtils.verbose_flag
 
   RELEASE_PLATFORM = '10.11'
@@ -29,11 +31,12 @@ module FastlaneRake
   # it to each make invocation seperately.
   MAKE_CONCURRENCY = `sysctl hw.physicalcpu`.strip.match(/\d+$/)[0].to_i + 1
 
+  FULL_BUNDLE_PATH = "bundle-#{FASTLANE_GEM_VERSION}"
   ROOT = File.dirname(__FILE__)
   PKG_DIR = 'pkg'
   DOWNLOAD_DIR = 'downloads'
   WORKBENCH_DIR = 'workbench'
-  DESTROOT = 'bundle/fastlane_lib'
+  DESTROOT = "#{FULL_BUNDLE_PATH}/fastlane_lib"
   BUNDLE_DESTROOT = File.join(DESTROOT, 'bundle')
   DEPENDENCIES_DESTROOT = File.join(DESTROOT, 'dependencies')
 
@@ -175,5 +178,9 @@ module FastlaneRake
 
   def install_gem(name, version = nil, group = 'Gems')
     execute group, [BUNDLE_ENV, 'gem', 'install', name, ("--version=#{version}" if version), '--no-document', '--env-shebang'].compact
+  end
+
+  def update_gem(name, group = 'Gem Update')
+    execute group, [BUNDLE_ENV, 'gem', 'update', name, '--no-document', '--env-shebang'].compact
   end
 end

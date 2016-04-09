@@ -205,7 +205,8 @@ module FastlaneRake
 
   @@installed_fastlane_bin = File.join(BUNDLE_DESTROOT, 'bin/fastlane')
   file @@installed_fastlane_bin => rubygems_update_dir do
-    install_gem 'fastlane', '1.81.0'
+    version = ENV['FASTLANE_GEM_VERSION'] || FASTLANE_GEM_VERSION
+    install_gem 'fastlane', version
   end
   def self.fastlane_task
     @@installed_fastlane_bin

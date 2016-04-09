@@ -1,6 +1,7 @@
 load './bundle_tasks.rake'
 extend FastlaneRake
 
+FULL_BUNDLE_PATH = FastlaneRake::FULL_BUNDLE_PATH
 VERBOSE = FastlaneRake::VERBOSE
 BUNDLE_DESTROOT = FastlaneRake::BUNDLE_DESTROOT
 BUNDLED_ENV_VERSION = FastlaneRake::BUNDLED_ENV_VERSION
@@ -9,12 +10,19 @@ WORKBENCH_DIR = FastlaneRake::WORKBENCH_DIR
 DOWNLOAD_DIR = FastlaneRake::DOWNLOAD_DIR
 DESTROOT = FastlaneRake::DESTROOT
 
+ZIPPED_BUNDLE = "#{FULL_BUNDLE_PATH}.zip"
+
 namespace :bundle do
+  task :build_ruby => FastlaneRake.ruby_task
+  task :install_fastlane => FastlaneRake.fastlane_task
+  task :install_cocoapods => FastlaneRake.cocoapods_task
+  task :install_pry => FastlaneRake.pry_task
+
   task :build_tools => [
-    FastlaneRake.ruby_task,
-    FastlaneRake.fastlane_task,
-    FastlaneRake.cocoapods_task,
-    FastlaneRake.pry_task,
+    :build_ruby,
+    :install_fastlane,
+    :install_cocoapods,
+    :install_pry,
     FastlaneRake.bundle_env_task,
     FastlaneRake.cacert_task,
   ].concat(FastlaneRake.install_gems_tasks)
@@ -43,11 +51,6 @@ namespace :bundle do
       puts "After clean:"
       sh "du -hs #{BUNDLE_DESTROOT}"
     end
-  end
-
-  desc 'Setup CocoaPods master repo'
-  file "~/.cocoapods/repos/master" do
-    execute 'CocoaPods', [BUNDLE_ENV, 'pod', 'setup']
   end
 
   desc "Creates a VERSION file in the destroot folder"
@@ -93,23 +96,23 @@ namespace :bundle do
   end
 
   desc "Copy the installable fastlane shim into the root of the bundle."
-  file "bundle/fastlane"  do
-    cp 'fastlane_bin', 'bundle/fastlane'
+  file "#{FULL_BUNDLE_PATH}/fastlane"  do
+    cp 'fastlane_bin', "#{FULL_BUNDLE_PATH}/fastlane"
   end
 
   desc "Build complete dist bundle"
-  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, "#{DESTROOT}/fastlane", "bundle/fastlane"]
+  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, "#{DESTROOT}/fastlane", "#{FULL_BUNDLE_PATH}/fastlane"]
 
   desc "Compress the bundle into a zipfile for distribution"
-  file "bundle.zip" do
-    execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', "bundle", "bundle.zip"]
+  file ZIPPED_BUNDLE do
+    execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', FULL_BUNDLE_PATH, ZIPPED_BUNDLE]
   end
 
   desc "Bundle the whole bundle"
-  task :bundle => [:build, "bundle.zip"]
+  task :bundle => [:build, ZIPPED_BUNDLE]
 
   namespace :clean do
-    task :build do
+    task :workbench do
       rm_rf WORKBENCH_DIR
     end
 
@@ -121,13 +124,21 @@ namespace :bundle do
       rm_rf DESTROOT
     end
 
+    task :bundle do
+      rm_rf FULL_BUNDLE_PATH
+    end
+
+    task :zip do
+      rm_rf ZIPPED_BUNDLE
+    end
+
     desc "Clean build leftovers"
-    task :leftovers => [:build, :downloads]
+    task :leftovers => [:workbench, :downloads]
 
     desc "Clean build and destroot artefacts"
-    task :artefacts => [:build, :destroot]
+    task :artefacts => [:workbench, :bundle]
 
     desc "Clean all artefacts, including downloads"
-    task :all => [:artefacts, :downloads]
+    task :all => [:artefacts, :downloads, :zip]
   end
 end
