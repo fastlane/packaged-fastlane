@@ -16,13 +16,29 @@ namespace :bundle do
   task :build_ruby => FastlaneRake.ruby_task
   task :install_fastlane => FastlaneRake.fastlane_task
   task :install_cocoapods => FastlaneRake.cocoapods_task
-  task :install_pry => FastlaneRake.pry_task
+  task :install_gems => [
+    FastlaneRake.pry_task,
+    FastlaneRake.rspec_task,
+    FastlaneRake.appium_lib_task,
+    FastlaneRake.artifactory_task,
+    FastlaneRake.badge_task,
+    FastlaneRake.dotgpg_task,
+    FastlaneRake.jazzy_task,
+    FastlaneRake.rest_client_task,
+    FastlaneRake.aws_sdk_task,
+    FastlaneRake.net_scp_task,
+    FastlaneRake.slather_task,
+    FastlaneRake.twitter_task,
+    FastlaneRake.xcake_task,
+    FastlaneRake.xcov_task,
+    FastlaneRake.xcode_install_task
+  ]
 
   task :build_tools => [
     :build_ruby,
     :install_fastlane,
     :install_cocoapods,
-    :install_pry,
+    :install_gems,
     FastlaneRake.bundle_env_task,
     FastlaneRake.cacert_task,
   ].concat(FastlaneRake.install_gems_tasks)
