@@ -133,11 +133,11 @@ namespace :bundle do
     end
 
     task :bundle do
-      rm_rf FULL_BUNDLE_PATH
+      rm_rf Dir['bundle-*/']
     end
 
     task :zip do
-      rm_rf ZIPPED_BUNDLE
+      rm_rf Dir['*.zip']
     end
 
     desc "Clean build leftovers"
