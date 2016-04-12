@@ -15,30 +15,10 @@ ZIPPED_BUNDLE = "#{FULL_BUNDLE_PATH}.zip"
 namespace :bundle do
   task :build_ruby => FastlaneRake.ruby_task
   task :install_fastlane => FastlaneRake.fastlane_task
-  task :install_cocoapods => FastlaneRake.cocoapods_task
-  task :install_gems => [
-    FastlaneRake.pry_task,
-    FastlaneRake.rspec_task,
-    FastlaneRake.appium_lib_task,
-    FastlaneRake.artifactory_task,
-    FastlaneRake.badge_task,
-    FastlaneRake.dotgpg_task,
-    FastlaneRake.jazzy_task,
-    FastlaneRake.rest_client_task,
-    FastlaneRake.aws_sdk_task,
-    FastlaneRake.net_scp_task,
-    FastlaneRake.slather_task,
-    FastlaneRake.twitter_task,
-    FastlaneRake.xcake_task,
-    FastlaneRake.xcov_task,
-    FastlaneRake.xcode_install_task
-  ]
 
   task :build_tools => [
     :build_ruby,
     :install_fastlane,
-    :install_cocoapods,
-    :install_gems,
     FastlaneRake.bundle_env_task,
     FastlaneRake.cacert_task,
   ].concat(FastlaneRake.install_gems_tasks)
@@ -116,8 +96,15 @@ namespace :bundle do
     cp 'fastlane_bin', "#{FULL_BUNDLE_PATH}/fastlane"
   end
 
+  desc 'Copy the parse_env.rb script into the root of the bundle'
+  file "#{DESTROOT}/parse_env.rb"  do
+    cp 'parse_env.rb', "#{DESTROOT}/parse_env.rb"
+  end
+
+  task :copy_scripts => ["#{DESTROOT}/fastlane", "#{FULL_BUNDLE_PATH}/fastlane", "#{DESTROOT}/parse_env.rb"]
+
   desc "Build complete dist bundle"
-  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, "#{DESTROOT}/fastlane", "#{FULL_BUNDLE_PATH}/fastlane"]
+  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, :copy_scripts]
 
   desc "Compress the bundle into a zipfile for distribution"
   file ZIPPED_BUNDLE do
@@ -160,7 +147,7 @@ namespace :bundle do
     task :leftovers => [:workbench, :downloads]
 
     desc "Clean build and destroot artefacts"
-    task :artefacts => [:workbench, :bundle]
+    task :artefacts => [:workbench, :bundle, :zip]
 
     desc "Clean all artefacts, including downloads"
     task :all => [:artefacts, :downloads, :zip]

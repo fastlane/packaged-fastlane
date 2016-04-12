@@ -22,7 +22,7 @@ module FastlaneRake
       out ||= $stdout
       err = $stderr
     else
-      err = File.open("/tmp/cocoapods-app-bundle-build-#{Process.pid}", 'w+')
+      err = File.open("/tmp/fabric-app-bundle-build-#{Process.pid}", 'w+')
       out ||= err
     end
     command << { :out => out, :err => err }
@@ -213,210 +213,6 @@ module FastlaneRake
   end
 
   # ------------------------------------------------------------------------------
-  # CocoaPods Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_cocoapods_bin = File.join(BUNDLE_DESTROOT, 'bin/fastlane')
-  file @@installed_cocoapods_bin => rubygems_update_dir do
-    install_gem 'cocoapods'
-  end
-  def self.cocoapods_task
-    @@installed_cocoapods_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # Pry Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_pry_bin = File.join(BUNDLE_DESTROOT, 'bin/pry')
-  file @@installed_pry_bin => rubygems_update_dir do
-    install_gem 'pry'
-  end
-  def self.pry_task
-    @@installed_pry_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # rspec Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_rspec_bin = File.join(BUNDLE_DESTROOT, 'bin/rspec')
-  file @@installed_rspec_bin => rubygems_update_dir do
-    install_gem 'rspec'
-  end
-  def self.rspec_task
-    @@installed_rspec_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # appium_lib Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_appium_lib_bin = File.join(BUNDLE_DESTROOT, 'bin/appium_lib')
-  file @@installed_appium_lib_bin => rubygems_update_dir do
-    install_gem 'appium_lib'
-  end
-  def self.appium_lib_task
-    @@installed_appium_lib_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # artifactory Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_artifactory_bin = File.join(BUNDLE_DESTROOT, 'bin/artifactory')
-  file @@installed_artifactory_bin => rubygems_update_dir do
-    install_gem 'artifactory'
-  end
-  def self.artifactory_task
-    @@installed_artifactory_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # badge Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_badge_bin = File.join(BUNDLE_DESTROOT, 'bin/badge')
-  file @@installed_badge_bin => rubygems_update_dir do
-    install_gem 'badge'
-  end
-  def self.badge_task
-    @@installed_badge_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # dotgpg Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_dotgpg_bin = File.join(BUNDLE_DESTROOT, 'bin/dotgpg')
-  file @@installed_dotgpg_bin => rubygems_update_dir do
-    install_gem 'dotgpg'
-  end
-  def self.dotgpg_task
-    @@installed_dotgpg_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # jazzy Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_jazzy_bin = File.join(BUNDLE_DESTROOT, 'bin/jazzy')
-  file @@installed_jazzy_bin => rubygems_update_dir do
-    install_gem 'jazzy'
-  end
-  def self.jazzy_task
-    @@installed_jazzy_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # rest-client Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_rest_client_bin = File.join(BUNDLE_DESTROOT, 'bin/rest-client')
-  file @@installed_rest_client_bin => rubygems_update_dir do
-    install_gem 'rest-client'
-  end
-  def self.rest_client_task
-    @@installed_rest_client_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # aws-sdk Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_aws_sdk_bin = File.join(BUNDLE_DESTROOT, 'bin/aws-sdk')
-  file @@installed_aws_sdk_bin => rubygems_update_dir do
-    install_gem 'aws-sdk'
-  end
-  def self.aws_sdk_task
-    @@installed_aws_sdk_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # net-scp Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_net_scp_bin = File.join(BUNDLE_DESTROOT, 'bin/net-scp')
-  file @@installed_net_scp_bin => rubygems_update_dir do
-    install_gem 'net-scp'
-  end
-  def self.net_scp_task
-    @@installed_net_scp_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # slather Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_slather_bin = File.join(BUNDLE_DESTROOT, 'bin/slather')
-  file @@installed_slather_bin => rubygems_update_dir do
-    install_gem 'slather'
-  end
-  def self.slather_task
-    @@installed_slather_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # net-ssh Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_net_ssh_bin = File.join(BUNDLE_DESTROOT, 'bin/net-ssh')
-  file @@installed_net_ssh_bin => rubygems_update_dir do
-    install_gem 'net-ssh'
-  end
-  def self.net_ssh_task
-    @@installed_net_ssh_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # twitter Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_twitter_bin = File.join(BUNDLE_DESTROOT, 'bin/twitter')
-  file @@installed_twitter_bin => rubygems_update_dir do
-    install_gem 'twitter'
-  end
-  def self.twitter_task
-    @@installed_twitter_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # xcake Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_xcake_bin = File.join(BUNDLE_DESTROOT, 'bin/xcake')
-  file @@installed_xcake_bin => rubygems_update_dir do
-    install_gem 'xcake'
-  end
-  def self.xcake_task
-    @@installed_xcake_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # xcov Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_xcov_bin = File.join(BUNDLE_DESTROOT, 'bin/xcov')
-  file @@installed_xcov_bin => rubygems_update_dir do
-    install_gem 'xcov'
-  end
-  def self.xcov_task
-    @@installed_xcov_bin
-  end
-
-  # ------------------------------------------------------------------------------
-  # xcode-install Gems
-  # ------------------------------------------------------------------------------
-
-  @@installed_xcode_install_bin = File.join(BUNDLE_DESTROOT, 'bin/xcversion')
-  file @@installed_xcode_install_bin => rubygems_update_dir do
-    install_gem 'xcode-install'
-  end
-  def self.xcode_install_task
-    @@installed_xcode_install_bin
-  end
-
-  # ------------------------------------------------------------------------------
   # Third-party gems
   # ------------------------------------------------------------------------------
 
@@ -425,7 +221,7 @@ module FastlaneRake
   Dir.glob('/System/Library/Frameworks/Ruby.framework/Versions/[0-9]*/usr/lib/ruby/gems/*/specifications/*.gemspec').each do |gemspec|
     # We have to make some file that does not contain any version information, otherwise we'd first have to query rubygems
     # for the available versions, which is going to take a long time.
-    installed_gem = File.join(GEM_HOME, 'specifications', "#{File.basename(gemspec, '.gemspec').split('-')[0..-2].join('-')}.CocoaPods-app.installed")
+    installed_gem = File.join(GEM_HOME, 'specifications', "#{File.basename(gemspec, '.gemspec').split('-')[0..-2].join('-')}.Fabric-app.installed")
     @@installed_osx_gems << installed_gem
     file installed_gem => rubygems_update_dir do
       suppress_upstream = false
@@ -438,7 +234,7 @@ module FastlaneRake
         install_gem(File.join(PATCHES_DIR, "#{File.basename(gemspec, '.gemspec')}.gem"))
       when 'sqlite3'
         # sqlite3-1.3.7 depends on BigDecimal header from before BigDecimal was made into a gem. I doubt anybody really
-        # uses sqlite for CocoaPods dependencies anyways, so just skip this old version.
+        # uses sqlite for fastlane dependencies anyways, so just skip this old version.
       when 'nokogiri'
         # nokogiri currently has a design flaw that results in its build
         # failing every time unless I manually patch extconf.rb. I have

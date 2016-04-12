@@ -155,7 +155,7 @@ module FastlaneRake
       out ||= $stdout
       err = $stderr
     else
-      err = File.open("/tmp/cocoapods-app-bundle-build-#{Process.pid}", 'w+')
+      err = File.open("/tmp/fabric-app-bundle-build-#{Process.pid}", 'w+')
       out ||= err
     end
     command << { :out => out, :err => err }
