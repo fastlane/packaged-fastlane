@@ -10,6 +10,10 @@ WORKBENCH_DIR = FastlaneRake::WORKBENCH_DIR
 DOWNLOAD_DIR = FastlaneRake::DOWNLOAD_DIR
 DESTROOT = FastlaneRake::DESTROOT
 
+
+load './shims_and_bins.rake'
+
+
 ZIPPED_BUNDLE = "#{FULL_BUNDLE_PATH}.zip"
 
 namespace :bundle do
@@ -86,22 +90,12 @@ namespace :bundle do
     execute 'Test', [BUNDLE_ENV, 'fastlane', 'actions']
   end
 
-  desc "Copy the fastlane shim into #{DESTROOT}."
-  file "#{DESTROOT}/fastlane" do
-    cp 'fastlane_shim', "#{DESTROOT}/fastlane"
-  end
-
-  desc "Copy the installable fastlane shim into the root of the bundle."
-  file "#{FULL_BUNDLE_PATH}/fastlane"  do
-    cp 'fastlane_bin', "#{FULL_BUNDLE_PATH}/fastlane"
-  end
-
   desc 'Copy the parse_env.rb script into the root of the bundle'
   file "#{DESTROOT}/parse_env.rb"  do
     cp 'parse_env.rb', "#{DESTROOT}/parse_env.rb"
   end
 
-  task :copy_scripts => ["#{DESTROOT}/fastlane", "#{FULL_BUNDLE_PATH}/fastlane", "#{DESTROOT}/parse_env.rb"]
+  task :copy_scripts => [:copy_all_shims_and_bins, "#{DESTROOT}/parse_env.rb"]
 
   desc "Build complete dist bundle"
   task :build => [:build_tools, :remove_unneeded_files, :stamp_version, :copy_scripts]
