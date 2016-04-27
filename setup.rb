@@ -17,6 +17,8 @@ module FastlaneRake
   puts "****** No Version Set! ******" unless FASTLANE_GEM_VERSION
   exit(1) unless FASTLANE_GEM_VERSION
 
+  puts "****** BUILDING VERSION #{FASTLANE_GEM_VERSION} ******"
+
   VERBOSE = !!RakeFileUtils.verbose_flag
 
   RELEASE_PLATFORM = '10.11'

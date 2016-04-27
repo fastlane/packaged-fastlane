@@ -10,6 +10,7 @@ BUNDLE_ENV = FastlaneRake::BUNDLE_ENV
 WORKBENCH_DIR = FastlaneRake::WORKBENCH_DIR
 DOWNLOAD_DIR = FastlaneRake::DOWNLOAD_DIR
 DESTROOT = FastlaneRake::DESTROOT
+FASTLANE_GEM_VERSION = FastlaneRake::FASTLANE_GEM_VERSION
 
 
 load './shims_and_bins.rake'
@@ -125,7 +126,7 @@ namespace :bundle do
   end
 
   desc "Create and save the bundle for CI."
-  task :ci_bundle => [:bundle, "$CIRCLE_ARTIFACTS/#{ZIPPED_BUNDLE}", :update_bundle_version_json]
+  task :ci_bundle => [:bundle, :update_bundle_version_json]
 
   namespace :clean do
     task :workbench do
