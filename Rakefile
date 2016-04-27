@@ -1,3 +1,4 @@
+require 'aws-sdk-v1'
 load './bundle_tasks.rake'
 extend FastlaneRake
 
@@ -113,8 +114,18 @@ namespace :bundle do
   desc "Bundle the whole bundle"
   task :bundle => [:build, ZIPPED_BUNDLE]
 
+  desc 'Update version JSON on S3'
+  task :update_bundle_version_json do
+    json = "{\"version\": \"#{FASTLANE_GEM_VERSION}\", \"updated_at\": \"#{Time.now.getutc}\"}"
+    s3 = AWS::S3.new
+    bucket = s3.buckets['kits-crashlytics-com']
+    obj = bucket.objects['fastlane/version.json']
+    obj.acl = :public_read
+    bucket.objects['fastlane/version.json'].write json
+  end
+
   desc "Create and save the bundle for CI."
-  task :ci_bundle => [:bundle, "$CIRCLE_ARTIFACTS/#{ZIPPED_BUNDLE}"]
+  task :ci_bundle => [:bundle, "$CIRCLE_ARTIFACTS/#{ZIPPED_BUNDLE}", :update_bundle_version_json]
 
   namespace :clean do
     task :workbench do

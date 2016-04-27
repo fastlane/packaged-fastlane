@@ -1,3 +1,6 @@
+require 'net/http'
+require 'json'
+
 module FastlaneRake
   extend Rake::DSL
 
@@ -7,7 +10,9 @@ module FastlaneRake
   # it can make assumptions that removing `BUNDLED_ENV_VERSION = `
   # from the first line will get the version.
 
-  FASTLANE_GEM_VERSION = ENV['FASTLANE_GEM_VERSION']
+  ruby_gems_json = Net::HTTP.get URI('https://rubygems.org/api/v1/gems/fastlane.json')
+  version = JSON.parse(ruby_gems_json)['version']
+  FASTLANE_GEM_VERSION = version
 
   puts "****** No Version Set! ******" unless FASTLANE_GEM_VERSION
   exit(1) unless FASTLANE_GEM_VERSION
