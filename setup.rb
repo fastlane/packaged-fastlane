@@ -9,6 +9,7 @@ module FastlaneRake
 
   FASTLANE_GEM_VERSION = ENV['FASTLANE_GEM_VERSION']
 
+  puts "****** No Version Set! ******" unless FASTLANE_GEM_VERSION
   exit(1) unless FASTLANE_GEM_VERSION
 
   VERBOSE = !!RakeFileUtils.verbose_flag
