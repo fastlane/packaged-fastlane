@@ -7,7 +7,9 @@ module FastlaneRake
   # it can make assumptions that removing `BUNDLED_ENV_VERSION = `
   # from the first line will get the version.
 
-  FASTLANE_GEM_VERSION = ENV['FASTLANE_GEM_VERSION'] || '1.81.0'
+  FASTLANE_GEM_VERSION = ENV['FASTLANE_GEM_VERSION']
+
+  exit(1) unless FASTLANE_GEM_VERSION
 
   VERBOSE = !!RakeFileUtils.verbose_flag
 
