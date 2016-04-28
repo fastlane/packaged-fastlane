@@ -115,6 +115,13 @@ namespace :bundle do
   desc "Bundle the whole bundle"
   task :bundle => [:build, ZIPPED_BUNDLE]
 
+  desc 'Upload bundle to S3'
+  task :upload_bundle do
+    s3 = AWS::S3.new
+    bucket = s3.buckets['kits-crashlytics-com']
+    bucket.objects.create["fastlane/#{ZIPPED_BUNDLE}"].write Pathname.new(ZIPPED_BUNDLE)
+  end
+
   desc 'Update version JSON on S3'
   task :update_bundle_version_json do
     json = "{\"version\": \"#{FASTLANE_GEM_VERSION}\", \"updated_at\": \"#{Time.now.getutc}\"}"
@@ -125,7 +132,7 @@ namespace :bundle do
   end
 
   desc "Create and save the bundle for CI."
-  task :ci_bundle => [:bundle, :update_bundle_version_json, 'clean:all']
+  task :ci_bundle => [:bundle, :upload_bundle, :update_bundle_version_json, 'clean:leftovers']
 
   namespace :clean do
     task :workbench do
