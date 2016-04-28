@@ -136,10 +136,6 @@ namespace :bundle do
       rm_rf DOWNLOAD_DIR
     end
 
-    task :destroot do
-      rm_rf DESTROOT
-    end
-
     task :bundle do
       rm_rf Dir['bundle-*/']
     end
@@ -149,12 +145,9 @@ namespace :bundle do
     end
 
     desc "Clean build leftovers"
-    task :leftovers => [:workbench, :downloads]
+    task :leftovers => [:workbench, :downloads, :bundle]
 
-    desc "Clean build and destroot artefacts"
-    task :artefacts => [:workbench, :bundle, :zip]
-
-    desc "Clean all artefacts, including downloads"
+    desc "Clean all artefacts, including downloads, and zip."
     task :all => [:artefacts, :downloads, :zip]
   end
 end
