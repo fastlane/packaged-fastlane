@@ -125,7 +125,7 @@ namespace :bundle do
   end
 
   desc "Create and save the bundle for CI."
-  task :ci_bundle => [:bundle, :update_bundle_version_json]
+  task :ci_bundle => [:bundle, :update_bundle_version_json, 'clean:all']
 
   namespace :clean do
     task :workbench do
