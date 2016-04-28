@@ -97,6 +97,32 @@ namespace :bundle do
     cp 'parse_env.rb', "#{DESTROOT}/parse_env.rb"
   end
 
+  desc "Copy all the shims and bins."
+  task :copy_all_shims_and_bins => [
+    "#{DESTROOT}/fastlane",
+    "#{FULL_BUNDLE_PATH}/fastlane",
+    "#{DESTROOT}/sigh",
+    "#{FULL_BUNDLE_PATH}/sigh",
+    "#{DESTROOT}/snapshot",
+    "#{FULL_BUNDLE_PATH}/snapshot",
+    "#{DESTROOT}/pem",
+    "#{FULL_BUNDLE_PATH}/pem",
+    "#{DESTROOT}/frameit",
+    "#{FULL_BUNDLE_PATH}/frameit",
+    "#{DESTROOT}/deliver",
+    "#{FULL_BUNDLE_PATH}/deliver",
+    "#{DESTROOT}/produce",
+    "#{FULL_BUNDLE_PATH}/produce",
+    "#{DESTROOT}/gym",
+    "#{FULL_BUNDLE_PATH}/gym",
+    "#{DESTROOT}/scan",
+    "#{FULL_BUNDLE_PATH}/scan",
+    "#{DESTROOT}/match",
+    "#{FULL_BUNDLE_PATH}/match",
+    "#{DESTROOT}/cert",
+    "#{FULL_BUNDLE_PATH}/cert"
+  ]
+
   task :copy_scripts => [:copy_all_shims_and_bins, "#{DESTROOT}/parse_env.rb"]
 
   desc "Build complete dist bundle"
@@ -127,8 +153,21 @@ namespace :bundle do
     obj.acl = :public_read
   end
 
+  desc 'Make sure that there is an update that needs to be bundled before building'
+  task :check_if_bundle_is_necessary do
+    s3 = AWS::S3.new
+    bucket = s3.buckets['kits-crashlytics-com']
+    obj = bucket.objects['fastlane/version.json']
+    json = JSON.parse obj.read
+    version_on_s3 = Gem::Version.new(json['version'])
+    unless version_on_s3 < Gem::Version.new(FASTLANE_GEM_VERSION)
+      puts "**** No need to build the bundle because #{version_on_s3} is already on S3!"
+      exit 1
+    end
+  end
+
   desc "Create and save the bundle for CI."
-  task :ci_bundle => [:bundle, :upload_bundle, :update_bundle_version_json, 'clean:all']
+  task :ci_bundle => [:check_if_bundle_is_necessary, :bundle, :upload_bundle, :update_bundle_version_json, 'clean:all']
 
   namespace :clean do
     task :workbench do

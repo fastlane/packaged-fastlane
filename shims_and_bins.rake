@@ -118,29 +118,3 @@ desc "Copy the installable cert shim into the root of the bundle."
 file "#{FULL_BUNDLE_PATH}/cert"  do
   cp 'bins/cert_bin', "#{FULL_BUNDLE_PATH}/cert"
 end
-
-desc "Copy all the shims and bins."
-task :copy_all_shims_and_bins => [
-  "#{DESTROOT}/fastlane",
-  "#{FULL_BUNDLE_PATH}/fastlane",
-  "#{DESTROOT}/sigh",
-  "#{FULL_BUNDLE_PATH}/sigh",
-  "#{DESTROOT}/snapshot",
-  "#{FULL_BUNDLE_PATH}/snapshot",
-  "#{DESTROOT}/pem",
-  "#{FULL_BUNDLE_PATH}/pem",
-  "#{DESTROOT}/frameit",
-  "#{FULL_BUNDLE_PATH}/frameit",
-  "#{DESTROOT}/deliver",
-  "#{FULL_BUNDLE_PATH}/deliver",
-  "#{DESTROOT}/produce",
-  "#{FULL_BUNDLE_PATH}/produce",
-  "#{DESTROOT}/gym",
-  "#{FULL_BUNDLE_PATH}/gym",
-  "#{DESTROOT}/scan",
-  "#{FULL_BUNDLE_PATH}/scan",
-  "#{DESTROOT}/match",
-  "#{FULL_BUNDLE_PATH}/match",
-  "#{DESTROOT}/cert",
-  "#{FULL_BUNDLE_PATH}/cert"
-]
