@@ -120,9 +120,8 @@ namespace :bundle do
     json = "{\"version\": \"#{FASTLANE_GEM_VERSION}\", \"updated_at\": \"#{Time.now.getutc}\"}"
     s3 = AWS::S3.new
     bucket = s3.buckets['kits-crashlytics-com']
-    obj = bucket.objects['fastlane/version.json']
+    obj = objects['fastlane/version.json'].write json
     obj.acl = :public_read
-    bucket.objects['fastlane/version.json'].write json
   end
 
   desc "Create and save the bundle for CI."
