@@ -160,11 +160,11 @@ namespace :bundle do
     obj = bucket.objects['fastlane/version.json']
     json = JSON.parse obj.read
     version_on_s3 = Gem::Version.new(json['version'])
-    puts "************** VERSION ON S3 #{version_on_s3}"
-    puts "************** VERSION ON RUBYGEMS #{Gem::Version.new(FASTLANE_GEM_VERSION)}"
     unless version_on_s3 < Gem::Version.new(FASTLANE_GEM_VERSION)
-      puts "**** No need to build the bundle because #{version_on_s3} is already on S3!"
+      puts "****** No need to build the bundle because #{version_on_s3} is already on S3! ******"
       exit 1
+    else
+      puts "****** BUILDING VERSION #{FASTLANE_GEM_VERSION} ******"
     end
   end
 
