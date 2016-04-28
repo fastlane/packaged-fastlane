@@ -155,6 +155,6 @@ namespace :bundle do
     task :leftovers => [:workbench, :downloads, :bundle]
 
     desc "Clean all artefacts, including downloads, and zip."
-    task :all => [:artefacts, :downloads, :zip]
+    task :all => [:leftovers, :zip]
   end
 end
