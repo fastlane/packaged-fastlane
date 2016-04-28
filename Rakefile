@@ -119,7 +119,8 @@ namespace :bundle do
   task :upload_bundle do
     s3 = AWS::S3.new
     bucket = s3.buckets['kits-crashlytics-com']
-    bucket.objects["fastlane/#{ZIPPED_BUNDLE}"].write(Pathname.new(ZIPPED_BUNDLE))
+    obj = bucket.objects["fastlane/#{ZIPPED_BUNDLE}"].write(Pathname.new(ZIPPED_BUNDLE))
+    obj.acl = :public_read
   end
 
   desc 'Update version JSON on S3'
