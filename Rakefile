@@ -162,7 +162,7 @@ namespace :bundle do
     version_on_s3 = Gem::Version.new(json['version'])
     unless version_on_s3 < Gem::Version.new(FASTLANE_GEM_VERSION)
       puts "****** No need to build the bundle because #{version_on_s3} is already on S3! ******"
-      exit 1
+      exit 0
     else
       puts "****** BUILDING VERSION #{FASTLANE_GEM_VERSION} ******"
     end
