@@ -1,3 +1,3 @@
 #!/bin/sh
 
-/usr/local/lib/fastlane_libproduce $@
+/usr/local/lib/fastlane_lib/produce $@
