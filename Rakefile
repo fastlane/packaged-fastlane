@@ -146,7 +146,8 @@ namespace :bundle do
 
   desc 'Update version JSON on S3'
   task :update_bundle_version_json do
-    json = "{\"version\": \"#{FASTLANE_GEM_VERSION}\", \"updated_at\": \"#{Time.now.getutc}\"}"
+    version = ENV['FASTLANE_GEM_OVERRIDE_VERSION'] || FASTLANE_GEM_VERSION
+    json = "{\"version\": \"#{version}\", \"updated_at\": \"#{Time.now.getutc}\"}"
     s3 = AWS::S3.new
     bucket = s3.buckets['kits-crashlytics-com']
     obj = bucket.objects['fastlane/version.json'].write json
