@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 BIN=$(cd "$(dirname "$0")"; pwd)
 PREFIX=$(dirname $BIN)
 LIB_PATH=$(dirname $PREFIX)
@@ -29,4 +29,5 @@ if [ -z "$TERM" ]; then
   export TERM=xterm-256color
 fi
 
-exec $*
+# Suppress errors relating to native extensions in the user's gemset.
+exec $* 2> >(grep -v '^Ignoring .* because its extensions are not built.  Try: gem pristine .* --version .*')
