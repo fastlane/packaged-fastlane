@@ -4,6 +4,9 @@ Creating the bundle is simple. Just run `rake bundle:bundle` to compile and buil
 
 This job queries RubyGems to get the most recent version that is available and builds that version of `fastlane`. By running `rake --tasks` you should also be able to predict what version will be built as that will also make the call to fetch the most recent version from RubyGems.
 
+### Cleanup
+Run `rake bundle:clean:all` to clean up everything from the bundle you created and start fresh.
+
 ### TeamCity
 TeamCity runs `rake bundle:ci_bundle` which has the additional task of pushing the newly built bundle to S3 and also bumping the version number in the `version.json` file to reflect the most recent version of the gem.
 
