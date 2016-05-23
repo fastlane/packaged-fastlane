@@ -12,6 +12,14 @@ module FastlaneRake
 
   ruby_gems_json = Net::HTTP.get URI('https://rubygems.org/api/v1/gems/fastlane.json')
   version = JSON.parse(ruby_gems_json)['version']
+
+  env_version = ENV['FASTLANE_GEM_VERSION']
+  if env_version == 'local'
+    dot_gem = Dir["#{ENV['HOME']}/Twitter/git/fastlane/fastlane/fastlane-*.gem"][0]
+    regex = /-([0-9\.]+).gem$/
+    version = regex.match(dot_gem)[1]
+  end
+
   FASTLANE_GEM_VERSION = version
 
   puts "****** No Version Set! ******" unless FASTLANE_GEM_VERSION

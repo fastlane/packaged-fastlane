@@ -11,6 +11,11 @@ module FastlaneRake
     execute group, [BUNDLE_ENV, 'gem', 'install', name, ("--version=#{version}" if version), '--no-document', '--env-shebang'].compact
   end
 
+  def self.install_local_fastlane
+    dot_gem = Dir["#{ENV['HOME']}/Twitter/git/fastlane/fastlane/fastlane-*.gem"][0]
+    execute 'Gems', [BUNDLE_ENV, 'gem', 'install', dot_gem, '--no-document', '--env-shebang'].compact
+  end
+
   def self.execute(group, command, output_file = nil)
     command.map!(&:to_s)
     log_command(group, command, output_file)
@@ -206,7 +211,11 @@ module FastlaneRake
   @@installed_fastlane_bin = File.join(BUNDLE_DESTROOT, 'bin/fastlane')
   file @@installed_fastlane_bin => rubygems_update_dir do
     version = ENV['FASTLANE_GEM_VERSION'] || FASTLANE_GEM_VERSION
-    install_gem 'fastlane', version
+    if version == 'local'
+      install_local_fastlane
+    else
+      install_gem 'fastlane', version
+    end
   end
   def self.fastlane_task
     @@installed_fastlane_bin
