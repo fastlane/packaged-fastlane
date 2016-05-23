@@ -21,9 +21,11 @@ ZIPPED_BUNDLE = "#{FULL_BUNDLE_PATH}.zip"
 namespace :bundle do
   task :build_ruby => FastlaneRake.ruby_task
   task :install_fastlane => FastlaneRake.fastlane_task
+  task :install_bundler => FastlaneRake.bundler_task
 
   task :build_tools => [
     :build_ruby,
+    :install_bundler,
     :install_fastlane,
     FastlaneRake.bundle_env_task,
     FastlaneRake.cacert_task,
