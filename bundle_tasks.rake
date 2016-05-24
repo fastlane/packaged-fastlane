@@ -12,7 +12,8 @@ module FastlaneRake
   end
 
   def self.install_local_fastlane
-    dot_gem = Dir["#{ENV['HOME']}/Twitter/git/fastlane/fastlane/fastlane-*.gem"][0]
+    fastlane_dir = ENV['LOCAL_FASTLANE_DIR']
+    dot_gem = Dir["#{fastlane_dir}/fastlane-*.gem"][0]
     execute 'Gems', [BUNDLE_ENV, 'gem', 'install', dot_gem, '--no-document', '--env-shebang'].compact
   end
 
@@ -223,6 +224,8 @@ module FastlaneRake
   file @@installed_fastlane_bin => rubygems_update_dir do
     version = ENV['FASTLANE_GEM_VERSION'] || FASTLANE_GEM_VERSION
     if version == 'local'
+      puts 'Please pass LOCAL_FASTLANE_DIR environment variable.' unless ENV['LOCAL_FASTLANE_DIR']
+      exit 0 unless ENV['LOCAL_FASTLANE_DIR']
       install_local_fastlane
     else
       install_gem 'fastlane', version
