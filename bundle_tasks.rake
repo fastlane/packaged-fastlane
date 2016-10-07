@@ -210,7 +210,7 @@ module FastlaneRake
   # ------------------------------------------------------------------------------
   @@installed_bundler_bin = File.join(BUNDLE_DESTROOT, 'bin/bundle')
   file @@installed_bundler_bin => rubygems_update_dir do
-    install_gem 'bundler'
+    install_gem 'bundler', '1.12.0'
   end
   def self.bundler_task
     @@installed_bundler_bin
