@@ -25,10 +25,10 @@ namespace :bundle do
 
   task :build_tools => [
     :build_ruby,
+    FastlaneRake.cacert_task,
     :install_bundler,
     :install_fastlane,
     FastlaneRake.bundle_env_task,
-    FastlaneRake.cacert_task,
   ].concat(FastlaneRake.install_gems_tasks)
 
   task :remove_unneeded_files => :build_tools do
