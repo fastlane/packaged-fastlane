@@ -117,7 +117,7 @@ module FastlaneRake
   RUBY__VERSION = '2.3.1'
   RUBY_URL = "http://cache.ruby-lang.org/pub/ruby/2.3/ruby-#{RUBY__VERSION}.tar.gz"
 
-  RUBYGEMS_VERSION = '2.5.2'
+  RUBYGEMS_VERSION = '2.6.7'
   RUBYGEMS_URL = "https://rubygems.org/downloads/rubygems-update-#{RUBYGEMS_VERSION}.gem"
 
   # ------------------------------------------------------------------------------
