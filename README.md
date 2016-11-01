@@ -4,6 +4,17 @@ Creating the bundle is simple. Just run `rake bundle:bundle` to compile and buil
 
 This job queries RubyGems to get the most recent version that is available and builds that version of `fastlane`. By running `rake --tasks` you should also be able to predict what version will be built as that will also make the call to fetch the most recent version from RubyGems.
 
+### Installing the bundle
+
+To install this on the user's machine, just copy the `fastlane_lib` to `/usr/local/lib/`:
+
+```sh
+cd bundle-1.x.x
+cp -R fastlane_lib /usr/local/lib
+
+./fastlane -v                       # => 1.x.x
+```
+
 ### Cleanup
 Run `rake bundle:clean:all` to clean up everything from the bundle you created and start fresh.
 
