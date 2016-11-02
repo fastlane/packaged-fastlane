@@ -1,10 +1,12 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+function gem_cleanup() {
+  EXCLUDE_SYSTEM_GEMS="true" "${DIR}/bundle/bin/bundle-env" gem cleanup
+}
+
 if [ "$@" = "update" ]; then
-  CURRENT_VERSION_STRING=$( "${DIR}/bundle/bin/bundle-env" fastlane -v )
-  CURRENT_VERSION_ARRAY=($CURRENT_VERSION_STRING)
-  VERSION=${CURRENT_VERSION_ARRAY[1]}
-  "${DIR}/bundle/bin/bundle-env" gem update fastlane; "${DIR}/bundle/bin/bundle-env" gem uninstall fastlane -v $VERSION
+  "${DIR}/bundle/bin/bundle-env" gem update fastlane
+  gem_cleanup
 else
   exec "${DIR}/bundle/bin/bundle-env" fastlane "$@"
 fi;
