@@ -127,6 +127,21 @@ namespace :bundle do
 
   task :copy_scripts => [:copy_all_shims_and_bins, "#{DESTROOT}/parse_env.rb"]
 
+  desc "Responsible for preparing the actual bundle"
+  desc "to also include the install.sh file"
+  task :refactor_fastlane_bundle do
+    output_dir = File.expand_path("..", DESTROOT)
+
+    # We don't need those empty shims
+    Dir[File.join(output_dir, "*")].each do |path|
+      next if File.directory?(path)
+      puts "Deleting file we don't need '#{path}'"
+      File.delete(path)
+    end
+
+    cp("install.sh", File.join(output_dir, "install.sh"))
+  end
+
   desc "Build complete dist bundle"
   task :build => [:build_tools, :remove_unneeded_files, :stamp_version, :copy_scripts]
 
