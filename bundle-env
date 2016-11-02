@@ -20,6 +20,8 @@ export LANG=en_GB.UTF-8
 export LC_CTYPE=UTF-8
 export SSL_CERT_FILE=$PREFIX/share/cacert.pem
 
+# set EXCLUDE_SYSTEM_GEMS to "true" when running command *only* on the bundled gem set
+# otherwise, this will make the user's existing gems available to the bundle
 if [ "$EXCLUDE_SYSTEM_GEMS" != "true" ]; then
   export GEM_PATH=$GEM_PATHS
 fi
