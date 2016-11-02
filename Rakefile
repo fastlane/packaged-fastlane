@@ -94,11 +94,6 @@ namespace :bundle do
     execute 'Test', [BUNDLE_ENV, 'fastlane', 'actions']
   end
 
-  desc 'Copy the parse_env.rb script into the root of the bundle'
-  file "#{DESTROOT}/parse_env.rb"  do
-    cp 'parse_env.rb', "#{DESTROOT}/parse_env.rb"
-  end
-
   desc "Copy all the shims and bins."
   task :copy_all_shims_and_bins => [
     "#{DESTROOT}/fastlane",
@@ -125,7 +120,7 @@ namespace :bundle do
     "#{FULL_BUNDLE_PATH}/cert"
   ]
 
-  task :copy_scripts => [:copy_all_shims_and_bins, "#{DESTROOT}/parse_env.rb"]
+  task :copy_scripts => [:copy_all_shims_and_bins]
 
   desc "Responsible for preparing the actual bundle"
   desc "to also include the install.sh file"

@@ -2,8 +2,6 @@
 BIN=$(cd "$(dirname "$0")"; pwd)
 PREFIX=$(dirname $BIN)
 LIB_PATH=$(dirname $PREFIX)
-PARSE_ENV_PATH=$LIB_PATH/parse_env.rb
-GEM_PATHS=$($BIN/ruby $PARSE_ENV_PATH)
 
 # Clear known env variables that can influence the standalone installation in a bad way.
 unset RUBYOPT
@@ -15,24 +13,15 @@ unset GEM_CACHE
 # Now define env variables that we need for the standalone installation to work and override where
 # necessary.
 
-export PATH=$BIN:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
-export LANG=en_GB.UTF-8
-export LC_CTYPE=UTF-8
+export PATH=$BIN:$PATH
 export SSL_CERT_FILE=$PREFIX/share/cacert.pem
 
-# set EXCLUDE_SYSTEM_GEMS to "true" when running command *only* on the bundled gem set
-# otherwise, this will make the user's existing gems available to the bundle
-if [ "$EXCLUDE_SYSTEM_GEMS" != "true" ]; then
-  export GEM_PATH=$GEM_PATHS
-fi
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 
-# Ensure these env variables we need are set.
-if [ -z "$HOME" ]; then
-  export HOME=$(cd ~; pwd)
-fi
-if [ -z "$TERM" ]; then
-  export TERM=xterm-256color
-fi
+# Tell Ruby where to find the gems
+export GEM_PATH=$LIB_PATH/bundle/bin
 
 # Suppress errors relating to native extensions in the user's gemset.
 exec "$@" 2> >(grep -v '^Ignoring .* because its extensions are not built.  Try: gem pristine .* --version .*')
