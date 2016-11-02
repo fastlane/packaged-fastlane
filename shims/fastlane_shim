@@ -1,7 +1,10 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [ "$@" = "update" ]; then
-  exec "${DIR}/bundle/bin/bundle-env" gem update fastlane
+  CURRENT_VERSION_STRING=$( "${DIR}/bundle/bin/bundle-env" fastlane -v )
+  CURRENT_VERSION_ARRAY=($CURRENT_VERSION_STRING)
+  VERSION=${CURRENT_VERSION_ARRAY[1]}
+  "${DIR}/bundle/bin/bundle-env" gem update fastlane; "${DIR}/bundle/bin/bundle-env" gem uninstall fastlane -v $VERSION
 else
   exec "${DIR}/bundle/bin/bundle-env" fastlane "$@"
 fi;
