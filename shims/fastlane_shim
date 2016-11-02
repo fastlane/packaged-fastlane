@@ -1,3 +1,12 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-exec "${DIR}/bundle/bin/bundle-env" fastlane "$@"
+function gem_cleanup() {
+  EXCLUDE_SYSTEM_GEMS="true" "${DIR}/bundle/bin/bundle-env" gem cleanup
+}
+
+if [ "$@" = "update" ]; then
+  "${DIR}/bundle/bin/bundle-env" gem update fastlane
+  gem_cleanup
+else
+  exec "${DIR}/bundle/bin/bundle-env" fastlane "$@"
+fi;
