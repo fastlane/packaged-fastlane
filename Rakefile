@@ -155,7 +155,9 @@ namespace :bundle do
   def prepare_bundle_env_for_env(contained: false)
     path = File.join(DESTROOT, "bundle", "bin", "bundle-env")
     content = File.read(path)
-    content.gsub!("{{IS_CONTAINED}}", contained.to_s)
+    placeholder = "{{IS_CONTAINED}}"
+    raise "Could not find placeholder #{placeholder} in '#{path}'" unless content.include?(placeholder)
+    content.gsub!(placeholder, contained.to_s)
     File.write(path, content)
     puts "Updated '#{path}' for IS_CONTAINED environment '#{contained}'"
   end
