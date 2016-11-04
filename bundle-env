@@ -3,6 +3,13 @@ BIN=$(cd "$(dirname "$0")"; pwd)
 PREFIX=$(dirname $BIN)
 LIB_PATH=$(dirname $PREFIX)
 
+# SELF_CONTAINED means that
+# our bundled Ruby doesn't look for gems
+# in the system's Ruby directory
+# {{ IS_CONTAINED }} will be replaced
+# when preparing the actual bundle
+export SELF_CONTAINED={{IS_CONTAINED}}
+
 # Clear known env variables that can influence the standalone installation in a bad way.
 unset RUBYOPT
 unset RUBYLIB
@@ -20,8 +27,17 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# Tell Ruby where to find the gems
-export GEM_PATH=$LIB_PATH/bundle/bin
+if [ "$SELF_CONTAINED" = "true" ]; then
+  # Tell Ruby where to find the gems
+  # we just want to look for gems inside the bundle
+  export GEM_PATH=$LIB_PATH/bundle/bin
+else
+  # set EXCLUDE_SYSTEM_GEMS to "true" when running command *only* on the bundled gem set
+  # otherwise, this will make the user's existing gems available to the bundle
+  if [ "$EXCLUDE_SYSTEM_GEMS" != "true" ]; then
+    export GEM_PATH=$($BIN/ruby $PARSE_ENV_PATH)
+  fi
+fi
 
 # Suppress errors relating to native extensions in the user's gemset.
 exec "$@" 2> >(grep -v '^Ignoring .* because its extensions are not built.  Try: gem pristine .* --version .*')

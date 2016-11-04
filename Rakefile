@@ -94,6 +94,11 @@ namespace :bundle do
     execute 'Test', [BUNDLE_ENV, 'fastlane', 'actions']
   end
 
+  desc 'Copy the parse_env.rb script into the root of the bundle'
+  file "#{DESTROOT}/parse_env.rb"  do
+    cp 'parse_env.rb', "#{DESTROOT}/parse_env.rb"
+  end
+
   desc "Copy all the shims and bins."
   task :copy_all_shims_and_bins => [
     "#{DESTROOT}/fastlane",
@@ -120,11 +125,11 @@ namespace :bundle do
     "#{FULL_BUNDLE_PATH}/cert"
   ]
 
-  task :copy_scripts => [:copy_all_shims_and_bins]
+  task :copy_scripts => [:copy_all_shims_and_bins, "#{DESTROOT}/parse_env.rb"]
 
-  desc "Responsible for preparing the actual bundle"
+  desc "Responsible for preparing the actual bundle for the fastlane standalone"
   desc "to also include the install.sh file"
-  task :refactor_fastlane_bundle do
+  task :finish_fastlane_standalone_bundle do
     output_dir = File.expand_path("..", DESTROOT)
 
     # We don't need those empty shims
@@ -134,7 +139,25 @@ namespace :bundle do
       File.delete(path)
     end
 
+    prepare_bundle_env_for_env(contained: true)
+
     cp("install.sh", File.join(output_dir, "install.sh"))
+  end
+
+  desc "Responsible for preparing the actual bundle for the Mac app"
+  task :finish_fastlane_mac_app_bundle do
+    prepare_bundle_env_for_env(contained: false)
+  end
+
+  # Update the bundle-env file to contain information
+  # about the environment, in particular if the bundle
+  # should be self-contained
+  def prepare_bundle_env_for_env(contained: false)
+    path = File.join(DESTROOT, "bundle", "bin", "bundle-env")
+    content = File.read(path)
+    content.gsub!("{{IS_CONTAINED}}", contained.to_s)
+    File.write(path, content)
+    puts "Updated '#{path}' for IS_CONTAINED environment '#{contained}'"
   end
 
   desc "Build complete dist bundle"
