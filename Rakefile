@@ -127,6 +127,41 @@ namespace :bundle do
 
   task :copy_scripts => [:copy_all_shims_and_bins, "#{DESTROOT}/parse_env.rb"]
 
+  desc "Responsible for preparing the actual bundle for the fastlane standalone"
+  desc "to also include the install.sh file"
+  task :finish_fastlane_standalone_bundle do
+    output_dir = File.expand_path("..", DESTROOT)
+
+    # We don't need those empty shims
+    Dir[File.join(output_dir, "*")].each do |path|
+      next if File.directory?(path)
+      puts "Deleting file we don't need '#{path}'"
+      File.delete(path)
+    end
+
+    prepare_bundle_env_for_env(standalone: true)
+
+    cp("install.sh", File.join(output_dir, "install.sh"))
+  end
+
+  desc "Responsible for preparing the actual bundle for the Mac app"
+  task :finish_fastlane_mac_app_bundle do
+    prepare_bundle_env_for_env(standalone: false)
+  end
+
+  # Update the bundle-env file to contain information
+  # about the environment, in particular if the bundle
+  # should be self-contained
+  def prepare_bundle_env_for_env(standalone: false)
+    path = File.join(DESTROOT, "bundle", "bin", "bundle-env")
+    content = File.read(path)
+    placeholder = "{{IS_STANDALONE}}"
+    raise "Could not find placeholder #{placeholder} in '#{path}'" unless content.include?(placeholder)
+    content.gsub!(placeholder, standalone.to_s)
+    File.write(path, content)
+    puts "Updated '#{path}' for IS_STANDALONE environment '#{standalone}'"
+  end
+
   desc "Build complete dist bundle"
   task :build => [:build_tools, :remove_unneeded_files, :stamp_version, :copy_scripts]
 

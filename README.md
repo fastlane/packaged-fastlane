@@ -4,6 +4,26 @@ Creating the bundle is simple. Just run `rake bundle:bundle` to compile and buil
 
 This job queries RubyGems to get the most recent version that is available and builds that version of `fastlane`. By running `rake --tasks` you should also be able to predict what version will be built as that will also make the call to fetch the most recent version from RubyGems.
 
+## Finishing up the bundle for the different targets
+
+Depending on what environment you build the bundle for, you need to run either of those finish tasks:
+
+### Fabric mac app fastlane
+
+This will set the Ruby environment to fallback to the Ruby that is installed on the user's machine, if a gem can't be found inside the fastlane bundle.
+
+```
+rake bundle:finish_fastlane_mac_app_bundle
+```
+
+### fastlane standalone bundle
+
+This will set the Ruby environment to only use the bundled gems, and absolutely no external ones that are installed on the user's machine. If the user wants to use a plugin for example, they need to install the gem into the fastlane bundle itself (instructions on how to do so will follow)
+
+```
+rake bundle:finish_fastlane_standalone_bundle
+```
+
 ### Installing the bundle
 
 To install this on the user's machine, just copy the `fastlane_lib` to `/usr/local/lib/`:
