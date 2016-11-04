@@ -4,7 +4,7 @@ function gem_cleanup() {
   EXCLUDE_SYSTEM_GEMS="true" "${DIR}/bundle/bin/bundle-env" gem cleanup
 }
 
-if [ "$@" = "update" ]; then
+if [ "$1" = "update" ]; then
   "${DIR}/bundle/bin/bundle-env" gem update fastlane
   gem_cleanup
 else
