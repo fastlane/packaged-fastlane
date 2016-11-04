@@ -139,27 +139,27 @@ namespace :bundle do
       File.delete(path)
     end
 
-    prepare_bundle_env_for_env(contained: true)
+    prepare_bundle_env_for_env(standalone: true)
 
     cp("install.sh", File.join(output_dir, "install.sh"))
   end
 
   desc "Responsible for preparing the actual bundle for the Mac app"
   task :finish_fastlane_mac_app_bundle do
-    prepare_bundle_env_for_env(contained: false)
+    prepare_bundle_env_for_env(standalone: false)
   end
 
   # Update the bundle-env file to contain information
   # about the environment, in particular if the bundle
   # should be self-contained
-  def prepare_bundle_env_for_env(contained: false)
+  def prepare_bundle_env_for_env(standalone: false)
     path = File.join(DESTROOT, "bundle", "bin", "bundle-env")
     content = File.read(path)
     placeholder = "{{IS_STANDALONE}}"
     raise "Could not find placeholder #{placeholder} in '#{path}'" unless content.include?(placeholder)
-    content.gsub!(placeholder, contained.to_s)
+    content.gsub!(placeholder, standalone.to_s)
     File.write(path, content)
-    puts "Updated '#{path}' for IS_STANDALONE environment '#{contained}'"
+    puts "Updated '#{path}' for IS_STANDALONE environment '#{standalone}'"
   end
 
   desc "Build complete dist bundle"
