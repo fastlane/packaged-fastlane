@@ -35,6 +35,7 @@ else
   # set EXCLUDE_SYSTEM_GEMS to "true" when running command *only* on the bundled gem set
   # otherwise, this will make the user's existing gems available to the bundle
   if [ "$EXCLUDE_SYSTEM_GEMS" != "true" ]; then
+    PARSE_ENV_PATH=$LIB_PATH/parse_env.rb
     export GEM_PATH=$($BIN/ruby $PARSE_ENV_PATH)
   fi
 fi
