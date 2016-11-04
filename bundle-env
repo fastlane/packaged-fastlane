@@ -6,9 +6,9 @@ LIB_PATH=$(dirname $PREFIX)
 # SELF_CONTAINED means that
 # our bundled Ruby doesn't look for gems
 # in the system's Ruby directory
-# {{ IS_CONTAINED }} will be replaced
+# {{ IS_STANDALONE }} will be replaced
 # when preparing the actual bundle
-export SELF_CONTAINED={{IS_CONTAINED}}
+export SELF_CONTAINED={{IS_STANDALONE}}
 
 # Clear known env variables that can influence the standalone installation in a bad way.
 unset RUBYOPT
