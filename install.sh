@@ -3,7 +3,9 @@ FASTLANE_DIR=~/.fastlane/bin
 # Copy fastlane to ~/.fastlane
 echo "Installing fastlane to $FASTLANE_DIR... this might take a few seconds"
 mkdir -p $FASTLANE_DIR
-cp -R "fastlane_lib/" $FASTLANE_DIR
+# We have to skip the 2 error messages below, which are shown if a previous version of fastlane
+# was installed via the bundle
+cp -R "fastlane_lib/" $FASTLANE_DIR 2>&1 | grep -v 'Permission denied' | grep -v 'File exists'
 
 echo "Successfully copied fastlane to $FASTLANE_DIR"
 echo ""
