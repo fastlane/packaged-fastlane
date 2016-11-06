@@ -1,19 +1,26 @@
+# Colored output using https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
+
 FASTLANE_DIR=~/.fastlane/bin
 
 # Copy fastlane to ~/.fastlane
+tput setaf 3 # yellow
 echo "Installing fastlane to $FASTLANE_DIR... this might take a few seconds"
 mkdir -p $FASTLANE_DIR
 cp -R "fastlane_lib/" $FASTLANE_DIR
 
+tput setaf 2 # green
 echo "Successfully copied fastlane to $FASTLANE_DIR"
 echo ""
 
 
 manual_installation() {
+  tput setaf 3 # yellow
   echo "Please add the following line to your bash profile:"
   echo ""
+  tput setaf 6 # cyan
   echo $1
   echo ""
+  tput setaf 2 # green
   echo "After doing so close the terminal session and restart it to start using fastlane  🚀"
 }
 
@@ -46,15 +53,19 @@ if [ $? -ne 0 ]; then
 
   profile_expanded="$(eval echo $profile)"
   if [ -f $profile_expanded ]; then
+    tput setaf 3 # yellow
     echo "Detected shell config file at path '$profile'"
     echo "We can add the following line to your shell config"
     echo "so you can run fastlane from any directory on your machine"
     echo ""
+    tput setaf 6 # cyan
     echo $LINE_TO_ADD
     echo ""
+    tput setaf 3 # yellow
     read -p "Do you want fastlane to add itself to the path by updating your profile? (y/n) " -n 1 choice
     case "$choice" in 
       y|Y )
+        tput setaf 2 # green
         echo ""
         echo $LINE_TO_ADD >> $profile_expanded
         echo "Successfully updated $profile"
@@ -66,9 +77,11 @@ if [ $? -ne 0 ]; then
     ;;
     esac
   else
+    tput setaf 1 # red
     echo "Couldn't detect shell config file ($shell - $profile)"
     manual_installation "$LINE_TO_ADD"
   fi
 else
+  tput setaf 2 # green
   echo "Detected fastlane is already in your path 🚀"
 fi
