@@ -54,7 +54,7 @@ if [ $? -ne 0 ]; then
     echo ""
     read -p "Do you want fastlane to add itself to the path by updating your profile? (y/n) " -n 1 choice
     case "$choice" in 
-      y|Y ) 
+      y|Y )
         echo ""
         echo $LINE_TO_ADD >> $profile_expanded
         echo "Successfully updated $profile"

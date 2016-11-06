@@ -128,7 +128,7 @@ namespace :bundle do
   task :copy_scripts => [:copy_all_shims_and_bins, "#{DESTROOT}/parse_env.rb"]
 
   desc "Responsible for preparing the actual bundle for the fastlane standalone"
-  desc "to also include the install.sh file"
+  desc "to also include the install.sh and other helper files"
   task :finish_fastlane_standalone_bundle do
     output_dir = File.expand_path("..", DESTROOT)
 
@@ -142,6 +142,7 @@ namespace :bundle do
     prepare_bundle_env_for_env(standalone: true)
 
     cp("install.sh", File.join(output_dir, "install.sh"))
+    cp("uninstall.sh", File.join(output_dir, "uninstall.sh"))
   end
 
   desc "Responsible for preparing the actual bundle for the Mac app"
