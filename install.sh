@@ -1,6 +1,7 @@
 # Colored output using https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
 
 FASTLANE_DIR=~/.fastlane/bin
+FASTLANE_DIR_RAW="\$HOME/.fastlane/bin" # used to add to the user's profile if necessary
 
 # Copy fastlane to ~/.fastlane
 tput setaf 3 # yellow
@@ -16,10 +17,8 @@ echo ""
 manual_installation() {
   tput setaf 3 # yellow
   echo "Please add the following line to your bash profile:"
-  echo ""
   tput setaf 6 # cyan
   echo $1
-  echo ""
   tput setaf 2 # green
   echo "After doing so close the terminal session and restart it to start using fastlane  🚀"
 }
@@ -27,7 +26,7 @@ manual_installation() {
 # check if it's already in the user's path
 echo $PATH | grep -o $FASTLANE_DIR > /dev/null
 if [ $? -ne 0 ]; then
-  export LINE_TO_ADD="export PATH=$FASTLANE_DIR:\$PATH"
+  export LINE_TO_ADD="\nexport PATH=$FASTLANE_DIR_RAW:\$PATH\n"
 
   # Detect shell environment
   shell=$(basename $(echo $SHELL))
@@ -44,7 +43,7 @@ if [ $? -ne 0 ]; then
       ;;
     fish )
       profile='~/.config/fish/config.fish'
-      LINE_TO_ADD="set -x PATH $FASTLANE_DIR \$PATH" # fish has its own way of setting variables
+      LINE_TO_ADD="set -x PATH $FASTLANE_DIR_RAW \$PATH" # fish has its own way of setting variables
       ;;
     * )
       profile="unknown"
@@ -57,10 +56,8 @@ if [ $? -ne 0 ]; then
     echo "Detected shell config file at path '$profile'"
     echo "We can add the following line to your shell config"
     echo "so you can run fastlane from any directory on your machine"
-    echo ""
     tput setaf 6 # cyan
     echo $LINE_TO_ADD
-    echo ""
     tput setaf 3 # yellow
     read -p "Do you want fastlane to add itself to the path by updating your profile? (y/n) " -n 1 choice
     case "$choice" in 
