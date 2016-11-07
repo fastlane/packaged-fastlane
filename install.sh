@@ -7,7 +7,9 @@ FASTLANE_DIR_RAW="\$HOME/.fastlane/bin" # used to add to the user's profile if n
 tput setaf 3 # yellow
 echo "Installing fastlane to $FASTLANE_DIR... this might take a few seconds"
 mkdir -p $FASTLANE_DIR
-cp -R "fastlane_lib/" $FASTLANE_DIR
+# We have to skip the 2 error messages below, which are shown if a previous version of fastlane
+# was installed via the bundle
+cp -R "fastlane_lib/" $FASTLANE_DIR 2>&1 | grep -v 'Permission denied' | grep -v 'File exists'
 
 tput setaf 2 # green
 echo "Successfully copied fastlane to $FASTLANE_DIR"
