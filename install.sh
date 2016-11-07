@@ -3,26 +3,45 @@
 FASTLANE_DIR=~/.fastlane/bin
 FASTLANE_DIR_RAW="\$HOME/.fastlane/bin" # used to add to the user's profile if necessary
 
+set_color() {
+  local color=$1
+  local color_val=1
+  case $color in
+    black ) color_val=0 ;;
+    red ) color_val=1 ;;
+    green ) color_val=2 ;;
+    yellow ) color_val=3 ;;
+    blue ) color_val=4 ;;
+    magenta ) color_val=5 ;;
+    cyan ) color_val=6 ;;
+    white ) color_val=7 ;;
+    * ) color_val=0;;
+  esac
+
+  tput setaf $color_val
+}
+
+echoc() {
+  local message=$1
+  local color=$2
+  set_color $color
+  echo $message
+}
 # Copy fastlane to ~/.fastlane
-tput setaf 3 # yellow
-echo "Installing fastlane to $FASTLANE_DIR... this might take a few seconds"
+echoc "Installing fastlane to $FASTLANE_DIR... this might take a few seconds" yellow
 mkdir -p $FASTLANE_DIR
 # We have to skip the 2 error messages below, which are shown if a previous version of fastlane
 # was installed via the bundle
 cp -R "fastlane_lib/" $FASTLANE_DIR 2>&1 | grep -v 'Permission denied' | grep -v 'File exists'
 
-tput setaf 2 # green
-echo "Successfully copied fastlane to $FASTLANE_DIR"
+echoc "Successfully copied fastlane to $FASTLANE_DIR" green
 echo ""
 
 
 manual_installation() {
-  tput setaf 3 # yellow
-  echo "Please add the following line to your bash profile:"
-  tput setaf 6 # cyan
-  echo $1
-  tput setaf 2 # green
-  echo "After doing so close the terminal session and restart it to start using fastlane  🚀"
+  echoc "Please add the following line to your bash profile:" yellow
+  echoc "$1" cyan
+  echoc "After doing so close the terminal session and restart it to start using fastlane  🚀" green
 }
 
 # check if it's already in the user's path
@@ -54,21 +73,19 @@ if [ $? -ne 0 ]; then
 
   profile_expanded="$(eval echo $profile)"
   if [ -f $profile_expanded ]; then
-    tput setaf 3 # yellow
-    echo "Detected shell config file at path '$profile'"
-    echo "We can add the following line to your shell config"
-    echo "so you can run fastlane from any directory on your machine"
-    tput setaf 6 # cyan
-    echo $LINE_TO_ADD
-    tput setaf 3 # yellow
+    echoc "Detected shell config file at path '$profile'" yellow
+    echoc "We can add the following line to your shell config" yellow
+    echoc "so you can run fastlane from any directory on your machine" yellow
+    echoc "$LINE_TO_ADD" cyan
+
+    set_color yellow
     read -p "Do you want fastlane to add itself to the path by updating your profile? (y/n) " -n 1 choice
     case "$choice" in 
       y|Y )
-        tput setaf 2 # green
         echo ""
         echo $LINE_TO_ADD >> $profile_expanded
-        echo "Successfully updated $profile"
-        echo "Please close the terminal session and restart it to start using fastlane 🚀"
+        echoc "Successfully updated $profile" green
+        echoc "Please close the terminal session and restart it to start using fastlane 🚀" green
     ;;
       * )
         echo ""
@@ -76,11 +93,9 @@ if [ $? -ne 0 ]; then
     ;;
     esac
   else
-    tput setaf 1 # red
-    echo "Couldn't detect shell config file ($shell - $profile)"
+    echoc "Couldn't detect shell config file ($shell - $profile)" red
     manual_installation "$LINE_TO_ADD"
   fi
 else
-  tput setaf 2 # green
-  echo "Detected fastlane is already in your path 🚀"
+  echoc "Detected fastlane is already in your path 🚀" green
 fi
