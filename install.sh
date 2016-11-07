@@ -26,7 +26,7 @@ manual_installation() {
 # check if it's already in the user's path
 echo $PATH | grep -o $FASTLANE_DIR > /dev/null
 if [ $? -ne 0 ]; then
-  export LINE_TO_ADD="\nexport PATH=$FASTLANE_DIR_RAW:\$PATH\n"
+  export LINE_TO_ADD="\nexport PATH=\"$FASTLANE_DIR_RAW:\$PATH\"\n"
 
   # Detect shell environment
   shell=$(basename $(echo $SHELL))
