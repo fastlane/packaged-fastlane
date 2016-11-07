@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Colored output using https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
 
 FASTLANE_DIR=~/.fastlane/bin
@@ -28,12 +29,34 @@ echoc() {
   set_color $color
   echo $message
 }
+
+if [ -d "$FASTLANE_DIR" ]; then
+  echoc "fastlane is already installed at $FASTLANE_DIR" yellow
+  read -p "Do you want to reinstall fastlane? The old directory, including any changes you made, will be removed! (y/N) " -n 1 choice
+  echo ""
+  case $choice in
+    y|Y )
+      echoc "The installer will now run the uninstall script to remove your existing fastlane bundle..." magenta
+      ./uninstall
+      if [[ $? != 0 ]]; then
+        echoc "There was a problem uninstalling the previous fastlane bundle, aborting installation..." red
+        exit 1 
+      fi
+      echoc "Done uninstalling, your regular installation will now commence. 🚕 💨" green
+      ;;
+    * )
+      echoc "Installation aborted, nothing to be done!" green
+      exit 1
+      ;;
+  esac
+fi
+
 # Copy fastlane to ~/.fastlane
 echoc "Installing fastlane to $FASTLANE_DIR... this might take a few seconds" yellow
 mkdir -p $FASTLANE_DIR
 # We have to skip the 2 error messages below, which are shown if a previous version of fastlane
 # was installed via the bundle
-cp -R "fastlane_lib/" $FASTLANE_DIR 2>&1 | grep -v 'Permission denied' | grep -v 'File exists'
+cp -R "fastlane_lib/" $FASTLANE_DIR
 
 echoc "Successfully copied fastlane to $FASTLANE_DIR" green
 echo ""
