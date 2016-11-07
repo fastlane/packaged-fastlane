@@ -1,3 +1,4 @@
+#!/bin/bash
 # Colored output using https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
 
 FASTLANE_DIR=~/.fastlane/bin
@@ -80,7 +81,7 @@ if [ $? -ne 0 ]; then
 
     set_color yellow
     read -p "Do you want fastlane to add itself to the path by updating your profile? (y/n) " -n 1 choice
-    case "$choice" in 
+    case "$choice" in
       y|Y )
         echo ""
         echo $LINE_TO_ADD >> $profile_expanded
