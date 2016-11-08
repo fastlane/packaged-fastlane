@@ -143,6 +143,7 @@ namespace :bundle do
 
     cp("install", File.join(output_dir, "install"))
     cp("uninstall", File.join(output_dir, "uninstall"))
+    cp("README.txt", File.join(output_dir, "README.txt"))
   end
 
   desc "Responsible for preparing the actual bundle for the Mac app"
