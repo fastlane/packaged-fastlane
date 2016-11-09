@@ -66,7 +66,8 @@ echo ""
 
 manual_installation() {
   echoc "Please add the following line to your bash profile:" yellow
-  echoc "$1" cyan
+  set_color cyan
+  echo -e "$1"
   echoc "After doing so close the terminal session and restart it to start using fastlane  🚀" green
 }
 
@@ -102,14 +103,15 @@ if [ $? -ne 0 ]; then
     echoc "Detected shell config file at path '$profile'" yellow
     echoc "We can add the following line to your shell config" yellow
     echoc "so you can run fastlane from any directory on your machine" yellow
-    echoc "$LINE_TO_ADD" cyan
+    set_color cyan
+    echo -e "$LINE_TO_ADD"
 
     set_color yellow
     read -p "Do you want fastlane to add itself to the path by updating your profile? (y/n) " -n 1 choice
     case "$choice" in
       y|Y )
         echo ""
-        echo $LINE_TO_ADD >> $profile_expanded
+        echo -e $LINE_TO_ADD >> $profile_expanded
         echoc "Successfully updated $profile" green
         echoc "Please close the terminal session and restart it to start using fastlane 🚀" green
     ;;
