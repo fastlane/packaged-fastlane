@@ -147,7 +147,7 @@ namespace :bundle do
   end
 
   desc "Build Standalone Bundle"
-  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_BUNDLE]
+  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_BUNDLE, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:all']
 
   desc "Responsible for preparing the actual bundle for the Mac app"
   task :finish_fastlane_mac_app_bundle do
@@ -178,29 +178,55 @@ namespace :bundle do
   desc "Bundle the whole bundle"
   task :bundle => [:build, ZIPPED_BUNDLE]
 
-  desc 'Upload bundle to S3'
+  desc 'Upload Mac app bundle to S3'
   task :upload_bundle do
-    s3 = AWS::S3.new
-    bucket = s3.buckets['kits-crashlytics-com']
-    obj = bucket.objects["fastlane/#{ZIPPED_BUNDLE}"].write(Pathname.new(ZIPPED_BUNDLE))
+    upload_bundle_to_s3
+  end
+
+  desc 'Update Mac app version JSON on S3'
+  task :update_bundle_version_json do
+    update_version_json
+  end
+
+  desc 'Upload Standalone Bundle to S3'
+  task :upload_standalone_bundle do
+    upload_bundle_to_s3(is_standalone: true)
+    upload_latest(is_standalone: true)
+  end
+
+  desc 'Update Standalone version JSON on S3'
+  task :update_standalone_bundle_version_json do
+    update_version_json(is_standalone: true)
+  end
+
+  def upload_latest(is_standalone: false)
+    path = is_standalone ? "fastlane/standalone/latest.zip" : "fastlane/latest.zip"
+    obj = s3_bucket.objects[path].write(Pathname.new(ZIPPED_BUNDLE))
     obj.acl = :public_read
   end
 
-  desc 'Update version JSON on S3'
-  task :update_bundle_version_json do
+  def upload_bundle_to_s3(is_standalone: false)
+    path = is_standalone ? "fastlane/standalone/#{ZIPPED_BUNDLE}" : "fastlane/#{ZIPPED_BUNDLE}"
+    obj = s3_bucket.objects[path].write(Pathname.new(ZIPPED_BUNDLE))
+    obj.acl = :public_read
+  end
+
+  def update_version_json(is_standalone: false)
     version = ENV['FASTLANE_GEM_OVERRIDE_VERSION'] || FASTLANE_GEM_VERSION
     json = "{\"version\": \"#{version}\", \"updated_at\": \"#{Time.now.getutc}\"}"
-    s3 = AWS::S3.new
-    bucket = s3.buckets['kits-crashlytics-com']
-    obj = bucket.objects['fastlane/version.json'].write json
+    path = is_standalone ? 'fastlane/standalone/version.json' : 'fastlane/version.json'
+    obj = s3_bucket.objects[path].write json
     obj.acl = :public_read
+  end
+
+  def s3_bucket
+    s3 = AWS::S3.new
+    s3.buckets['kits-crashlytics-com']
   end
 
   desc 'Make sure that there is an update that needs to be bundled before building'
   task :check_if_bundle_is_necessary do
-    s3 = AWS::S3.new
-    bucket = s3.buckets['kits-crashlytics-com']
-    obj = bucket.objects['fastlane/version.json']
+    obj = s3_bucket.objects['fastlane/version.json']
     json = JSON.parse obj.read
     version_on_s3 = Gem::Version.new(json['version'])
     unless version_on_s3 < Gem::Version.new(FASTLANE_GEM_VERSION)
