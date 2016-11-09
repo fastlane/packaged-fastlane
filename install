@@ -66,7 +66,8 @@ echo ""
 
 manual_installation() {
   echoc "Please add the following line to your bash profile:" yellow
-  echoc "$1" cyan
+  set_color cyan
+  echo -e "$1"
   echoc "After doing so close the terminal session and restart it to start using fastlane  🚀" green
 }
 
