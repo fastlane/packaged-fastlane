@@ -146,6 +146,9 @@ namespace :bundle do
     cp("README.txt", File.join(output_dir, "README.txt"))
   end
 
+  desc "Build Standalone Bundle"
+  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_BUNDLE]
+
   desc "Responsible for preparing the actual bundle for the Mac app"
   task :finish_fastlane_mac_app_bundle do
     prepare_bundle_env_for_env(standalone: false)
