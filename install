@@ -37,7 +37,9 @@ if [ -d "$FASTLANE_DIR" ]; then
   case $choice in
     y|Y )
       echoc "The installer will now run the uninstall script to remove your existing fastlane bundle..." magenta
-      ./uninstall
+      CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+      $CURRENT_DIR/uninstall
+
       if [[ $? != 0 ]]; then
         echoc "There was a problem uninstalling the previous fastlane bundle, aborting installation..." red
         exit 1 
