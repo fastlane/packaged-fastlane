@@ -4,6 +4,7 @@
 
 FASTLANE_DIR=~/.fastlane/bin
 FASTLANE_DIR_RAW="\$HOME/.fastlane/bin" # used to add to the user's profile if necessary
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 set_color() {
   local color=$1
@@ -37,8 +38,7 @@ if [ -d "$FASTLANE_DIR" ]; then
   case $choice in
     y|Y )
       echoc "The installer will now run the uninstall script to remove your existing fastlane bundle..." magenta
-      CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-      $CURRENT_DIR/uninstall
+      "$CURRENT_DIR/uninstall"
 
       if [[ $? != 0 ]]; then
         echoc "There was a problem uninstalling the previous fastlane bundle, aborting installation..." red
@@ -58,7 +58,7 @@ echoc "Installing fastlane to $FASTLANE_DIR... this might take a few seconds" ye
 mkdir -p $FASTLANE_DIR
 # We have to skip the 2 error messages below, which are shown if a previous version of fastlane
 # was installed via the bundle
-cp -R "fastlane_lib/" $FASTLANE_DIR
+cp -R "$CURRENT_DIR/fastlane_lib/" $FASTLANE_DIR
 
 echoc "Successfully copied fastlane to $FASTLANE_DIR" green
 echo ""
