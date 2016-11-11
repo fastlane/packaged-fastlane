@@ -6,6 +6,21 @@ FASTLANE_DIR=~/.fastlane/bin
 FASTLANE_DIR_RAW="\$HOME/.fastlane/bin" # used to add to the user's profile if necessary
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+usage() {
+  echo "./install [-u] [-p]"
+  echo "    -u : Uninstall fastlane if it exists in $FASTLANE_DIR"
+  echo "    -p : Don't update the path automatically"
+  exit 1
+}
+
+while getopts ":pu" opt; do
+  case $opt in
+    p ) SKIP_SETTING_PATH=1;;
+    u ) DO_UNINSTALL=1;;
+    * ) usage ;;
+  esac
+done
+
 set_color() {
   local color=$1
   local color_val=1
@@ -33,12 +48,22 @@ echoc() {
 
 if [ -d "$FASTLANE_DIR" ]; then
   echoc "fastlane is already installed at $FASTLANE_DIR" yellow
-  read -p "Do you want to reinstall fastlane? The old directory, including any changes you made, will be removed! (y/N) " -n 1 choice
-  echo ""
+  if [ "$DO_UNINSTALL" == "1" ]; then
+    choice="y"
+  else
+    read -p "Do you want to reinstall fastlane? The old directory, including any changes you made, will be removed! (y/N) " -n 1 choice
+    echo ""
+  fi
+
   case $choice in
     y|Y )
       echoc "The installer will now run the uninstall script to remove your existing fastlane bundle..." magenta
-      "$CURRENT_DIR/uninstall"
+
+      if [ "$DO_UNINSTALL" == "1" ]; then
+        "$CURRENT_DIR/uninstall" -y
+      else
+        "$CURRENT_DIR/uninstall"
+      fi
 
       if [[ $? != 0 ]]; then
         echoc "There was a problem uninstalling the previous fastlane bundle, aborting installation..." red
@@ -101,6 +126,12 @@ if [ $? -ne 0 ]; then
   profile_expanded="$(eval echo $profile)"
   if [ -f $profile_expanded ]; then
     echoc "Detected shell config file at path '$profile'" yellow
+
+    if [ "$SKIP_SETTING_PATH" == "1" ]; then
+      manual_installation "$LINE_TO_ADD"
+      exit 0
+    fi
+    
     echoc "We can add the following line to your shell config" yellow
     echoc "so you can run fastlane from any directory on your machine" yellow
     set_color cyan
