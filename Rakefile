@@ -147,7 +147,7 @@ namespace :bundle do
   end
 
   desc "Build Standalone Bundle"
-  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_BUNDLE, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:all']
+  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_BUNDLE, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:leftovers']
 
   desc "Responsible for preparing the actual bundle for the Mac app"
   task :finish_fastlane_mac_app_bundle do
@@ -238,7 +238,7 @@ namespace :bundle do
   end
 
   desc "Create and save the bundle for CI."
-  task :ci_bundle => [:check_if_bundle_is_necessary, :bundle, :upload_bundle, :update_bundle_version_json, 'clean:all']
+  task :ci_bundle => [:check_if_bundle_is_necessary, :bundle, :upload_bundle, :update_bundle_version_json, 'clean:leftovers']
 
   namespace :clean do
     task :workbench do
