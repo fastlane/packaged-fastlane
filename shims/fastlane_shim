@@ -7,7 +7,7 @@ function gem_cleanup() {
 }
 
 if [ "$1" = "update_fastlane" ]; then
-  "${DIR}/bundle/bin/bundle-env" gem update fastlane pilot spaceship produce deliver frameit pem snapshot screengrab supply cert sigh match scan gym fastlane_core credentials_manager
+  "${DIR}/bundle/bin/bundle-env" gem update --no-document fastlane pilot spaceship produce deliver frameit pem snapshot screengrab supply cert sigh match scan gym fastlane_core credentials_manager
   gem_cleanup
 else
   exec "${DIR}/bundle/bin/bundle-env" fastlane "$@"
