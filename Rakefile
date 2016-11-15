@@ -15,9 +15,7 @@ DOWNLOAD_DIR = FastlaneRake::DOWNLOAD_DIR
 DESTROOT = FastlaneRake::DESTROOT
 FASTLANE_GEM_VERSION = FastlaneRake::FASTLANE_GEM_VERSION
 
-
 load './shims_and_bins.rake'
-
 
 ZIPPED_BUNDLE = "#{FULL_BUNDLE_PATH}.zip"
 
@@ -58,6 +56,12 @@ namespace :bundle do
       puts "After clean:"
       sh "du -hs #{BUNDLE_DESTROOT}"
     end
+  end
+
+  desc "Creates a VERSION file in the root of the bundle"
+  task :stamp_version do
+    path = File.join(DESTROOT, 'VERSION')
+    File.open(path, 'w') { |f| f.write "#{BUNDLE_VERSION}\n"}
   end
 
   desc "Verifies that no binaries in the bundle link to incorrect dylibs"
@@ -165,7 +169,7 @@ namespace :bundle do
   end
 
   desc "Build complete dist bundle"
-  task :build => [:build_tools, :remove_unneeded_files, :copy_scripts]
+  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, :copy_scripts]
 
   desc "Compress the bundle into a zipfile for distribution"
   file ZIPPED_BUNDLE do
