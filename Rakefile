@@ -1,11 +1,14 @@
 require 'aws-sdk-v1'
+require 'json'
+
 load './bundle_tasks.rake'
 extend FastlaneRake
+
+BUNDLE_VERSION = 1.0
 
 FULL_BUNDLE_PATH = FastlaneRake::FULL_BUNDLE_PATH
 VERBOSE = FastlaneRake::VERBOSE
 BUNDLE_DESTROOT = FastlaneRake::BUNDLE_DESTROOT
-BUNDLED_ENV_VERSION = FastlaneRake::BUNDLED_ENV_VERSION
 BUNDLE_ENV = FastlaneRake::BUNDLE_ENV
 WORKBENCH_DIR = FastlaneRake::WORKBENCH_DIR
 DOWNLOAD_DIR = FastlaneRake::DOWNLOAD_DIR
@@ -55,12 +58,6 @@ namespace :bundle do
       puts "After clean:"
       sh "du -hs #{BUNDLE_DESTROOT}"
     end
-  end
-
-  desc "Creates a VERSION file in the destroot folder"
-  task :stamp_version do
-    path = File.join(BUNDLE_DESTROOT, "VERSION")
-    File.open(path, 'w') { |file| file.write "#{BUNDLED_ENV_VERSION}\n" }
   end
 
   desc "Verifies that no binaries in the bundle link to incorrect dylibs"
@@ -168,7 +165,7 @@ namespace :bundle do
   end
 
   desc "Build complete dist bundle"
-  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, :copy_scripts]
+  task :build => [:build_tools, :remove_unneeded_files, :copy_scripts]
 
   desc "Compress the bundle into a zipfile for distribution"
   file ZIPPED_BUNDLE do
@@ -213,7 +210,11 @@ namespace :bundle do
 
   def update_version_json(is_standalone: false)
     version = ENV['FASTLANE_GEM_OVERRIDE_VERSION'] || FASTLANE_GEM_VERSION
-    json = "{\"version\": \"#{version}\", \"updated_at\": \"#{Time.now.getutc}\"}"
+    json = {
+      version: version,
+      bundle_version: BUNDLE_VERSION,
+      updated_at: Time.now.getutc,
+      }.to_json
     path = is_standalone ? 'fastlane/standalone/version.json' : 'fastlane/version.json'
     obj = s3_bucket.objects[path].write json
     obj.acl = :public_read
