@@ -40,5 +40,7 @@ else
   fi
 fi
 
+ruby $LIB_PATH/bundle_update_checker.rb
+
 # Suppress errors relating to native extensions in the user's gemset.
 exec "$@" 2> >(grep -v '^Ignoring .* because its extensions are not built.  Try: gem pristine .* --version .*')
