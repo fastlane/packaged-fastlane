@@ -21,6 +21,11 @@ ZIPPED_BUNDLE = "#{FULL_BUNDLE_PATH}.zip"
 ZIPPED_STANDALONE = "bundle-#{BUNDLE_VERSION}.zip"
 
 namespace :bundle do
+  desc "Print Bundle Version"
+  task :version do
+    puts BUNDLE_VERSION
+  end
+
   task :build_ruby => FastlaneRake.ruby_task
   task :install_fastlane => FastlaneRake.fastlane_task
   task :install_bundler => FastlaneRake.bundler_task
