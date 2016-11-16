@@ -14,7 +14,6 @@ module FastlaneRake
     version = regex.match(dot_gem)[1]
   end
 
-  BUNDLE_VERSION = 1.0
   FASTLANE_GEM_VERSION = version
 
   puts "****** No Version Set! ******" unless FASTLANE_GEM_VERSION
