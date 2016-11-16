@@ -7,16 +7,20 @@ FASTLANE_DIR_RAW="\$HOME/.fastlane/bin" # used to add to the user's profile if n
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 usage() {
-  echo "./install [-u] [-p]"
+  echo "./install [-u] [-p] [-b]"
   echo "    -u : Uninstall fastlane if it exists in $FASTLANE_DIR"
   echo "    -p : Don't update the path automatically"
+  echo "    -b : Installed via homebrew"
   exit 1
 }
 
-while getopts ":pu" opt; do
+INSTALLED_VIA_HOMEBREW=false
+
+while getopts ":pub" opt; do
   case $opt in
     p ) SKIP_SETTING_PATH=1;;
     u ) DO_UNINSTALL=1;;
+    b ) INSTALLED_VIA_HOMEBREW=true;;
     * ) usage ;;
   esac
 done
@@ -67,7 +71,7 @@ if [ -d "$FASTLANE_DIR" ]; then
 
       if [[ $? != 0 ]]; then
         echoc "There was a problem uninstalling the previous fastlane bundle, aborting installation..." red
-        exit 1 
+        exit 1
       fi
       echoc "Done uninstalling, your regular installation will now commence. 🚕 💨" green
       ;;
@@ -87,6 +91,10 @@ cp -R "$CURRENT_DIR/fastlane_lib/" $FASTLANE_DIR
 
 echoc "Successfully copied fastlane to $FASTLANE_DIR" green
 echo ""
+
+# Set the FASTLANE_INSTALLED_VIA_HOMEWBREW flag in bundle-env
+BUNDLE_ENV_PATH="$FASTLANE_DIR/bundle/bin/bundle-env"
+sed -i '' "s/{{IS_INSTALLED_VIA_HOMEBREW}}/$INSTALLED_VIA_HOMEBREW/g" $BUNDLE_ENV_PATH
 
 # Update the contained fastlane install
 "$FASTLANE_DIR/fastlane" update_fastlane
@@ -133,14 +141,14 @@ if [ $? -ne 0 ]; then
       manual_installation "$LINE_TO_ADD"
       exit 0
     fi
-    
+
     echoc "We can add the following line to your shell config" yellow
     echoc "so you can run fastlane from any directory on your machine" yellow
     set_color cyan
     echo -e "$LINE_TO_ADD"
 
     set_color yellow
-    read -p "Do you want fastlane to add itself to the path by updating your profile? (y/n) " -n 1 choice
+    read -p "Do you want fastlane to add itself to the PATH by updating your profile? (y/n) " -n 1 choice
     case "$choice" in
       y|Y )
         echo ""

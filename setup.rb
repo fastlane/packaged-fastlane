@@ -4,12 +4,6 @@ require 'json'
 module FastlaneRake
   extend Rake::DSL
 
-  BUNDLED_ENV_VERSION = 2
-  # ^ This has to be at line 0
-  # This is so that a build on CP.app can be fast,
-  # it can make assumptions that removing `BUNDLED_ENV_VERSION = `
-  # from the first line will get the version.
-
   ruby_gems_json = Net::HTTP.get URI('https://rubygems.org/api/v1/gems/fastlane.json')
   version = JSON.parse(ruby_gems_json)['version']
 

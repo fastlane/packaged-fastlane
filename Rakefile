@@ -1,24 +1,31 @@
 require 'aws-sdk-v1'
+require 'json'
+
 load './bundle_tasks.rake'
 extend FastlaneRake
+
+BUNDLE_VERSION = 1.0
 
 FULL_BUNDLE_PATH = FastlaneRake::FULL_BUNDLE_PATH
 VERBOSE = FastlaneRake::VERBOSE
 BUNDLE_DESTROOT = FastlaneRake::BUNDLE_DESTROOT
-BUNDLED_ENV_VERSION = FastlaneRake::BUNDLED_ENV_VERSION
 BUNDLE_ENV = FastlaneRake::BUNDLE_ENV
 WORKBENCH_DIR = FastlaneRake::WORKBENCH_DIR
 DOWNLOAD_DIR = FastlaneRake::DOWNLOAD_DIR
 DESTROOT = FastlaneRake::DESTROOT
 FASTLANE_GEM_VERSION = FastlaneRake::FASTLANE_GEM_VERSION
 
-
 load './shims_and_bins.rake'
 
-
 ZIPPED_BUNDLE = "#{FULL_BUNDLE_PATH}.zip"
+ZIPPED_STANDALONE = "bundle-#{BUNDLE_VERSION}.zip"
 
 namespace :bundle do
+  desc "Print Bundle Version"
+  task :version do
+    puts BUNDLE_VERSION
+  end
+
   task :build_ruby => FastlaneRake.ruby_task
   task :install_fastlane => FastlaneRake.fastlane_task
   task :install_bundler => FastlaneRake.bundler_task
@@ -57,10 +64,10 @@ namespace :bundle do
     end
   end
 
-  desc "Creates a VERSION file in the destroot folder"
+  desc "Creates a VERSION file in the root of the bundle"
   task :stamp_version do
-    path = File.join(BUNDLE_DESTROOT, "VERSION")
-    File.open(path, 'w') { |file| file.write "#{BUNDLED_ENV_VERSION}\n" }
+    path = File.join(DESTROOT, 'VERSION')
+    File.open(path, 'w') { |f| f.write "#{BUNDLE_VERSION}\n"}
   end
 
   desc "Verifies that no binaries in the bundle link to incorrect dylibs"
@@ -147,7 +154,7 @@ namespace :bundle do
   end
 
   desc "Build Standalone Bundle"
-  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_BUNDLE, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:leftovers']
+  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_STANDALONE, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:leftovers']
 
   desc "Responsible for preparing the actual bundle for the Mac app"
   task :finish_fastlane_mac_app_bundle do
@@ -173,6 +180,11 @@ namespace :bundle do
   desc "Compress the bundle into a zipfile for distribution"
   file ZIPPED_BUNDLE do
     execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', FULL_BUNDLE_PATH, ZIPPED_BUNDLE]
+  end
+
+  desc "Compress the STANDALONE bundle into a zipfile for distribution"
+  file ZIPPED_STANDALONE do
+    execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', FULL_BUNDLE_PATH, ZIPPED_STANDALONE]
   end
 
   desc "Bundle the whole bundle"
@@ -213,7 +225,11 @@ namespace :bundle do
 
   def update_version_json(is_standalone: false)
     version = ENV['FASTLANE_GEM_OVERRIDE_VERSION'] || FASTLANE_GEM_VERSION
-    json = "{\"version\": \"#{version}\", \"updated_at\": \"#{Time.now.getutc}\"}"
+    json = {
+      version: version,
+      bundle_version: BUNDLE_VERSION,
+      updated_at: Time.now.getutc,
+      }.to_json
     path = is_standalone ? 'fastlane/standalone/version.json' : 'fastlane/version.json'
     obj = s3_bucket.objects[path].write json
     obj.acl = :public_read
