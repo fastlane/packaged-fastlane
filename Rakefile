@@ -18,6 +18,7 @@ FASTLANE_GEM_VERSION = FastlaneRake::FASTLANE_GEM_VERSION
 load './shims_and_bins.rake'
 
 ZIPPED_BUNDLE = "#{FULL_BUNDLE_PATH}.zip"
+ZIPPED_STANDALONE = "bundle-#{BUNDLE_VERSION}.zip"
 
 namespace :bundle do
   task :build_ruby => FastlaneRake.ruby_task
@@ -148,7 +149,7 @@ namespace :bundle do
   end
 
   desc "Build Standalone Bundle"
-  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_BUNDLE, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:leftovers']
+  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_STANDALONE, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:leftovers']
 
   desc "Responsible for preparing the actual bundle for the Mac app"
   task :finish_fastlane_mac_app_bundle do
@@ -174,6 +175,11 @@ namespace :bundle do
   desc "Compress the bundle into a zipfile for distribution"
   file ZIPPED_BUNDLE do
     execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', FULL_BUNDLE_PATH, ZIPPED_BUNDLE]
+  end
+
+  desc "Compress the STANDALONE bundle into a zipfile for distribution"
+  file ZIPPED_STANDALONE do
+    execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', FULL_BUNDLE_PATH, ZIPPED_STANDALONE]
   end
 
   desc "Bundle the whole bundle"
