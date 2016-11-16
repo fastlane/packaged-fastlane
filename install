@@ -14,11 +14,13 @@ usage() {
   exit 1
 }
 
+INSTALLED_VIA_HOMEBREW=false
+
 while getopts ":pub" opt; do
   case $opt in
     p ) SKIP_SETTING_PATH=1;;
     u ) DO_UNINSTALL=1;;
-    b ) INSTALLED_VIA_HOMEBREW=1;;
+    b ) INSTALLED_VIA_HOMEBREW=true;;
     * ) usage ;;
   esac
 done
@@ -92,12 +94,7 @@ echo ""
 
 # Set the FASTLANE_INSTALLED_VIA_HOMEWBREW flag in bundle-env
 BUNDLE_ENV_PATH="$FASTLANE_DIR/bundle/bin/bundle-env"
-HOMEBREW=false
-if [ "$INSTALLED_VIA_HOMEBREW" == "1" ]; then
-  HOMEBREW=true
-fi
-
-sed -i '' "s/{{IS_INSTALLED_VIA_HOMEBREW}}/$HOMEBREW/g" $BUNDLE_ENV_PATH
+sed -i '' "s/{{IS_INSTALLED_VIA_HOMEBREW}}/$INSTALLED_VIA_HOMEBREW/g" $BUNDLE_ENV_PATH
 
 # Update the contained fastlane install
 "$FASTLANE_DIR/fastlane" update_fastlane
