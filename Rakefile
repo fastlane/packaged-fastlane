@@ -153,8 +153,22 @@ namespace :bundle do
     cp("README.txt", File.join(output_dir, "README.txt"))
   end
 
+  desc "Prepare current Cask file by substituting the correct values in the template" 
+  task :prepare_cask_template do
+    brew_template_path = File.join(File.dirname(__FILE__), "cask", "fastlane.rb.template")
+    brew_file_path = File.join(File.dirname(__FILE__), "cask", "fastlane.rb")
+
+    template = File.read(brew_template_path)
+    template.gsub!("{{CURRENT_VERSION}}", BUNDLE_VERSION.to_s)
+
+    sha256sum = Digest::SHA256.file(ZIPPED_STANDALONE).hexdigest
+    template.gsub!("{{SHA_NUM}}", sha256sum)
+
+    File.write(brew_file_path, template)
+  end
+
   desc "Build Standalone Bundle"
-  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_STANDALONE, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:leftovers']
+  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_STANDALONE, :prepare_cask_template, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:leftovers']
 
   desc "Responsible for preparing the actual bundle for the Mac app"
   task :finish_fastlane_mac_app_bundle do
