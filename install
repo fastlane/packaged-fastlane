@@ -18,7 +18,7 @@ while getopts ":pub" opt; do
   case $opt in
     p ) SKIP_SETTING_PATH=1;;
     u ) DO_UNINSTALL=1;;
-    b ) INSTALLED_VIA_HOMEBREW=1
+    b ) INSTALLED_VIA_HOMEBREW=1;;
     * ) usage ;;
   esac
 done
@@ -92,11 +92,12 @@ echo ""
 
 # Set the FASTLANE_INSTALLED_VIA_HOMEWBREW flag in bundle-env
 BUNDLE_ENV_PATH="$FASTLANE_DIR/bundle/bin/bundle-env"
+HOMEBREW=false
 if [ "$INSTALLED_VIA_HOMEBREW" == "1" ]; then
-  # gsub {{IS_INSTALLED_VIA_HOMEBREW}} true
-else
-  # gsub {{IS_INSTALLED_VIA_HOMEBREW}} false
+  HOMEBREW=true
 fi
+
+sed -i '' "s/{{IS_INSTALLED_VIA_HOMEBREW}}/$HOMEBREW/g" $BUNDLE_ENV_PATH
 
 # Update the contained fastlane install
 "$FASTLANE_DIR/fastlane" update_fastlane
@@ -150,7 +151,7 @@ if [ $? -ne 0 ]; then
     echo -e "$LINE_TO_ADD"
 
     set_color yellow
-    read -p "Do you want fastlane to add itself to the path by updating your profile? (y/n) " -n 1 choice
+    read -p "Do you want fastlane to add itself to the PATH by updating your profile? (y/n) " -n 1 choice
     case "$choice" in
       y|Y )
         echo ""

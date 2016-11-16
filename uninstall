@@ -22,9 +22,9 @@ else
 fi
 
 case "$choice" in
-y|Y ) 
+y|Y )
   rm -rf "$FASTLANE_DIR"
-  echo "Fastlane was uninstalled successfully!"
+  echo "fastlane was uninstalled successfully!"
 ;;
 * )
   echo "Cancelled uninstall process"
