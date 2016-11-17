@@ -2,9 +2,8 @@
 
 # Colored output using https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
 
-FASTLANE_DIR=~/.fastlane/bin
-FASTLANE_DIR_RAW="\$HOME/.fastlane/bin" # used to add to the user's profile if necessary
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$CURRENT_DIR/common.sh"
 
 usage() {
   echo "./install [-u] [-p] [-b]"
@@ -24,31 +23,6 @@ while getopts ":pub" opt; do
     * ) usage ;;
   esac
 done
-
-set_color() {
-  local color=$1
-  local color_val=1
-  case $color in
-    black ) color_val=0 ;;
-    red ) color_val=1 ;;
-    green ) color_val=2 ;;
-    yellow ) color_val=3 ;;
-    blue ) color_val=4 ;;
-    magenta ) color_val=5 ;;
-    cyan ) color_val=6 ;;
-    white ) color_val=7 ;;
-    * ) color_val=0;;
-  esac
-
-  tput setaf $color_val
-}
-
-echoc() {
-  local message=$1
-  local color=$2
-  set_color $color
-  echo $message
-}
 
 if [ -d "$FASTLANE_DIR" ]; then
   echoc "fastlane is already installed at $FASTLANE_DIR" yellow
@@ -111,29 +85,10 @@ echo $PATH | grep -o $FASTLANE_DIR > /dev/null
 if [ $? -ne 0 ]; then
   export LINE_TO_ADD="\nexport PATH=\"$FASTLANE_DIR_RAW:\$PATH\"\n"
 
-  # Detect shell environment
-  shell=$(basename $(echo $SHELL))
-  case "$shell" in
-    bash )
-      if [ -f "${HOME}/.bashrc" ] && [ ! -f "${HOME}/.bash_profile" ]; then
-        profile='~/.bashrc'
-      else
-        profile='~/.bash_profile'
-      fi
-      ;;
-    zsh )
-      profile='~/.zshrc'
-      ;;
-    fish )
-      profile='~/.config/fish/config.fish'
-      LINE_TO_ADD="set -x PATH $FASTLANE_DIR_RAW \$PATH" # fish has its own way of setting variables
-      ;;
-    * )
-      profile="unknown"
-      ;;
-  esac
+  if [[ "$shell" == "fish" ]]; then
+    LINE_TO_ADD="set -x PATH $FASTLANE_DIR_RAW \$PATH" # fish has its own way of setting variables
+  fi
 
-  profile_expanded="$(eval echo $profile)"
   if [ -f $profile_expanded ]; then
     echoc "Detected shell config file at path '$profile'" yellow
 

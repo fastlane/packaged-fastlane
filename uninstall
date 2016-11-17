@@ -1,5 +1,7 @@
 #!/bin/bash
-FASTLANE_DIR=~/.fastlane/bin
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$CURRENT_DIR/common.sh"
 
 usage() {
   echo "./uninstall [-y]"
@@ -17,6 +19,7 @@ done
 if [ "$UNINSTALL_CONFIRMED" == "1" ]; then
   choice="y"
 else
+  set_color yellow
   read -p "Do you want to uninstall fastlane from $FASTLANE_DIR? (y/n) " -n 1 choice
   echo ""
 fi
@@ -24,10 +27,11 @@ fi
 case "$choice" in
 y|Y )
   rm -rf "$FASTLANE_DIR"
-  echo "fastlane was uninstalled successfully!"
+  echoc "You can now remove fastlane from your search path by editing your $profile file." yellow
+  echoc "fastlane was uninstalled successfully!" green
 ;;
 * )
-  echo "Cancelled uninstall process"
+  echoc "Cancelled uninstall process" red
   exit 1
 ;;
 esac
