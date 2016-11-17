@@ -150,6 +150,7 @@ namespace :bundle do
 
     cp("install", File.join(output_dir, "install"))
     cp("uninstall", File.join(output_dir, "uninstall"))
+    cp("common.sh", File.join(output_dir, "common.sh"))
     cp("README.txt", File.join(output_dir, "README.txt"))
   end
 
