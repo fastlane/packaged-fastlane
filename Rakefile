@@ -232,8 +232,9 @@ namespace :bundle do
   end
 
   def upload_bundle_to_s3(is_standalone: false)
-    path = is_standalone ? "fastlane/standalone/#{ZIPPED_BUNDLE}" : "fastlane/#{ZIPPED_BUNDLE}"
-    obj = s3_bucket.objects[path].write(Pathname.new(ZIPPED_BUNDLE))
+    path = is_standalone ? "fastlane/standalone/#{ZIPPED_STANDALONE}" : "fastlane/#{ZIPPED_BUNDLE}"
+    s3_path = is_standalone ? Pathname.new(ZIPPED_STANDALONE) : Pathname.new(ZIPPED_BUNDLE)
+    obj = s3_bucket.objects[path].write(s3_path)
     obj.acl = :public_read
   end
 
