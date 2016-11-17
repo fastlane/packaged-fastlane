@@ -153,7 +153,7 @@ namespace :bundle do
     cp("README.txt", File.join(output_dir, "README.txt"))
   end
 
-  desc "Prepare current Cask file by substituting the correct values in the template" 
+  desc "Prepare current Cask file by substituting the correct values in the template"
   task :prepare_cask_template do
     brew_template_path = File.join(File.dirname(__FILE__), "cask", "fastlane.rb.template")
     brew_file_path = File.join(File.dirname(__FILE__), "cask", "fastlane.rb")
@@ -227,7 +227,8 @@ namespace :bundle do
 
   def upload_latest(is_standalone: false)
     path = is_standalone ? "fastlane/standalone/latest.zip" : "fastlane/latest.zip"
-    obj = s3_bucket.objects[path].write(Pathname.new(ZIPPED_BUNDLE))
+    s3_path = is_standalone ? Pathname.new(ZIPPED_STANDALONE) : Pathname.new(ZIPPED_BUNDLE)
+    obj = s3_bucket.objects[path].write(s3_path)
     obj.acl = :public_read
   end
 
