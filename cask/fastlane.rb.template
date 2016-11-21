@@ -1,18 +1,13 @@
 cask 'fastlane' do
-  VERSION_NUMBER='{{CURRENT_VERSION}}'
-
-  version VERSION_NUMBER
+  version  '{{CURRENT_VERSION}}'
   sha256 '{{SHA_NUM}}'
 
-  url "https://kits-crashlytics-com.s3.amazonaws.com/fastlane/standalone/bundle-#{VERSION_NUMBER}.zip"
+  # kits-crashlytics-com.s3.amazonaws.com/fastlane/ was verified as official when first introduced to the cask
+  url "https://kits-crashlytics-com.s3.amazonaws.com/fastlane/standalone/bundle-#{version}.zip"
   name 'fastlane'
   homepage 'https://fastlane.tools'
 
-  installer script: "./install",
-            args: ['-p', '-u', '-b'],
-            sudo: false
+  installer script: './install', args: ['-p', '-u', '-b'], sudo: false
 
-  uninstall script: { executable: "./uninstall",
-                            args: ['-y'],
-                            sudo: false }
+  uninstall script: { executable: './uninstall', args: ['-y'], sudo: false }
 end
