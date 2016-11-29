@@ -29,6 +29,10 @@ echoc() {
   echo $message
 }
 
+reset_color() {
+  tput sgr0
+}
+
 # Detect shell environment
 shell=$(basename $(echo $SHELL))
 case "$shell" in

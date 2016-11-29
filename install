@@ -71,6 +71,7 @@ BUNDLE_ENV_PATH="$FASTLANE_DIR/bundle/bin/bundle-env"
 sed -i '' "s/{{IS_INSTALLED_VIA_HOMEBREW}}/$INSTALLED_VIA_HOMEBREW/g" $BUNDLE_ENV_PATH
 
 # Update the contained fastlane install
+reset_color
 "$FASTLANE_DIR/fastlane" update_fastlane
 
 manual_installation() {
