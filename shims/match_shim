@@ -2,4 +2,4 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-exec "${DIR}/bundle/bin/bundle-env" match $@
+exec "${DIR}/bundle/bin/bundle-env" match "$@"
