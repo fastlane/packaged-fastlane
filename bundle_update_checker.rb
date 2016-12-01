@@ -17,6 +17,6 @@ if available_bundle_version > current_bundle_version
     puts "Please run `brew cask reinstall fastlane`"
   else
     puts "Please update fastlane by downloading an updated bundle from"
-    puts "https://kits-crashlytics-com.s3.amazonaws.com/fastlane/standalone/latest.zip"
+    puts "https://download.fastlane.tools"
   end
 end
