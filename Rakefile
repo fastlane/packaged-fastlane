@@ -254,6 +254,9 @@ namespace :bundle do
   end
 
   def s3_bucket
+    ENV['AWS_ACCESS_KEY_ID'] = ENV['CI_AGENT_AWS_ACCESS_KEY']
+    ENV['AWS_SECRET_ACCESS_KEY'] = ENV['CI_AGENT_AWS_SECRET_ACCESS_KEY']
+    ENV['AWS_REGION'] = 'us-east-1'
     s3 = AWS::S3.new
     s3.buckets['kits-crashlytics-com']
   end
