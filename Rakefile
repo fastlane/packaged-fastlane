@@ -175,7 +175,10 @@ namespace :bundle do
   end
 
   desc "Build Standalone Bundle"
-  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_STANDALONE, :prepare_cask_template, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:leftovers']
+  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_STANDALONE, :prepare_cask_template]
+
+  desc "Build and Deploy Standalone Bundle"
+  task :build_and_deploy_standalone => [:build_standalone, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:leftovers']
 
   desc "Responsible for preparing the actual bundle for the Mac app"
   task :finish_fastlane_mac_app_bundle do
