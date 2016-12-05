@@ -36,7 +36,12 @@ namespace :bundle do
     :install_bundler,
     :install_fastlane,
     FastlaneRake.bundle_env_task,
-  ].concat(FastlaneRake.install_gems_tasks)
+  ].concat(FastlaneRake.install_gems_tasks) << :gem_cleanup
+
+  desc "Run gem cleanup"
+  task :gem_cleanup do
+    execute 'Gem Clean Up', [BUNDLE_ENV, 'gem', 'cleanup']
+  end
 
   task :remove_unneeded_files => :build_tools do
     remove_if_existant = lambda do |*paths|
