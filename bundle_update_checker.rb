@@ -12,7 +12,7 @@ version_string = File.open(path_to_version) { |file| file.each_line.first }
 current_bundle_version = version_string.chomp.to_f
 
 if available_bundle_version > current_bundle_version
-  puts "Fastlane update available"
+  puts "fastlane update available"
   if ENV["FASTLANE_INSTALLED_VIA_HOMEBREW"] == "true"
     puts "Please run `brew cask reinstall fastlane`"
   else
