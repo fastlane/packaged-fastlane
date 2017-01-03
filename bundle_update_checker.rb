@@ -14,7 +14,7 @@ current_bundle_version = version_string.chomp.to_f
 if available_bundle_version > current_bundle_version
   puts "fastlane update available"
   if ENV["FASTLANE_INSTALLED_VIA_HOMEBREW"] == "true"
-    puts "Please run `brew cask reinstall fastlane`"
+    puts "Please run `brew update && brew cask reinstall fastlane`"
   else
     puts "Please update fastlane by downloading an updated bundle from"
     puts "https://download.fastlane.tools"
