@@ -174,8 +174,11 @@ namespace :bundle do
     File.write(brew_file_path, template)
   end
 
+  desc "Build Standalone Package"
+  task :standalone => [:build, :standalone_bundle, ZIPPED_STANDALONE]
+
   desc "Build Standalone Bundle"
-  task :build_standalone => [:build, :standalone_bundle, ZIPPED_STANDALONE, :prepare_cask_template]
+  task :build_standalone => [:standalone, :prepare_cask_template]
 
   desc "Build and Deploy Standalone Bundle"
   task :build_and_deploy_standalone => [:build_standalone, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:leftovers']
