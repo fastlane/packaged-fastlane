@@ -13,7 +13,7 @@ Depending on what environment you build the bundle for, you need to run either o
 This will set the Ruby environment to fallback to the Ruby that is installed on the user's machine, if a gem can't be found inside the fastlane bundle.
 
 ```
-rake bundle:finish_fastlane_mac_app_bundle
+rake bundle:mac_app_bundle
 ```
 
 ### fastlane standalone bundle
@@ -21,7 +21,7 @@ rake bundle:finish_fastlane_mac_app_bundle
 This will set the Ruby environment to only use the bundled gems, and absolutely no external ones that are installed on the user's machine. If the user wants to use a plugin for example, they need to install the gem into the fastlane bundle itself (instructions on how to do so will follow)
 
 ```
-rake bundle:finish_fastlane_standalone_bundle
+rake bundle:standalone_bundle
 ```
 
 ### Installing the bundle
