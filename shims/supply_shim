@@ -1,5 +1,4 @@
 #!/bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-exec "${DIR}/bundle/bin/bundle-env" supply "$@"
+echo 'Executing fastlane tools directly has been deprecated.'
+echo 'Please run supply by running `fastlane supply`.'
