@@ -1,5 +1,4 @@
 #!/bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-exec "${DIR}/bundle/bin/bundle-env" pem "$@"
+echo 'Executing fastlane tools directly has been deprecated.'
+echo 'Please run pem by running `fastlane pem`.'

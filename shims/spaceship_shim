@@ -1,5 +1,4 @@
 #!/bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-exec "${DIR}/bundle/bin/bundle-env" spaceship "$@"
+echo 'Executing fastlane tools directly has been deprecated.'
+echo 'Please run spaceship by running `fastlane spaceship`.'
