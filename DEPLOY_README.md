@@ -1,6 +1,6 @@
 # Bundle
 ## Create the bundle
-Creating the bundle is simple. Just run `rake bundle:bundle` to compile and build the package of ruby with `fastlane`. This will create the `.zip` file as well for sending to other people for testing or (if totally necessary) deploying to S3.
+Creating the bundle is simple. Just run `rake bundle:bundle` to compile and build the package of Ruby with _fastlane_. This will create the `.zip` file as well for sending to other people for testing or (if totally necessary) deploying to S3.
 
 This job queries RubyGems to get the most recent version that is available and builds that version of `fastlane`. By running `rake --tasks` you should also be able to predict what version will be built as that will also make the call to fetch the most recent version from RubyGems.
 
@@ -29,10 +29,10 @@ rake bundle:standalone_bundle
 To install this on the user's machine, just copy the `fastlane_lib` to `/usr/local/lib/`:
 
 ```sh
-cd bundle-1.x.x
+cd bundle-2.x.x
 cp -R fastlane_lib /usr/local/lib
 
-./fastlane -v                       # => 1.x.x
+./fastlane -v                       # => 2.x.x
 ```
 
 ### Cleanup
@@ -49,6 +49,6 @@ That being said, the designed behavior is that if this job does run, it will che
 In terminal, call `path/to/destroot/fastlane` followed by a normal call to any `fastlane` action or lane.
 
 ### Background
-This is being build using the same method by which [CocoaPods-app](https://github.com/CocoaPods/CocoaPods-app) is building their bundled ruby. But the process has been pared down to fit our needs.
+This is being build using the same method by which [CocoaPods-app](https://github.com/CocoaPods/CocoaPods-app) is building their bundled Ruby. But the process has been pared down to fit our needs.
 
-Some of the code might still contain traces of CocoaPods stuff, and defintely, the way that the `Rakefile` has been broken up could use some work.
+Some of the code might still contain traces of CocoaPods code, and defintely, the way that the `Rakefile` has been broken up could use some work.
