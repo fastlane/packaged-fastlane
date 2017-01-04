@@ -56,7 +56,7 @@ namespace :package do
 
   namespace :standalone do
     desc "Build and deploy package"
-    task :deploy => [:standalone, :prepare_cask_template, :upload_standalone_bundle, :update_version_json, 'clean:leftovers']
+    task :deploy => [:zip, :prepare_cask_template, :upload_package, :update_version_json, 'clean:leftovers']
 
     desc "Build package"
     task :zip => [:build, :prepare, ZIPPED_STANDALONE]
