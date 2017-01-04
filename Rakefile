@@ -20,8 +20,89 @@ load './shims_and_bins.rake'
 ZIPPED_BUNDLE = "#{FULL_BUNDLE_PATH}.zip"
 ZIPPED_STANDALONE = "bundle-#{BUNDLE_VERSION}.zip"
 
-namespace :bundle do
-  desc "Print Bundle Version"
+namespace :package do
+
+  namespace :mac_app do
+    desc "Build and Deploy Mac App Package"
+    task :deploy => [:check_if_update_is_necessary, :zip, :upload_package, :update_version_json, 'clean:leftovers']
+
+    desc "Zip up the package for Mac app"
+    task :zip => [:build, :prepare, ZIPPED_BUNDLE]
+
+    task :prepare do
+      prepare_bundle_env_for_env(standalone: false)
+    end
+
+    task :update_version_json do
+      update_version_json
+    end
+
+    task :upload_package do
+      upload_package_to_s3
+    end
+
+    task :check_if_update_is_necessary do
+      obj = s3_bucket.objects['fastlane/version.json']
+      json = JSON.parse obj.read
+      version_on_s3 = Gem::Version.new(json['version'])
+      unless version_on_s3 < Gem::Version.new(FASTLANE_GEM_VERSION)
+        puts "****** No need to build the bundle because #{version_on_s3} is already on S3! ******"
+        exit 0
+      else
+        puts "****** BUILDING VERSION #{FASTLANE_GEM_VERSION} ******"
+      end
+    end
+  end
+
+  namespace :standalone do
+    desc "Build and Deploy Standalone Package"
+    task :deploy => [:standalone, :prepare_cask_template, :upload_standalone_bundle, :update_version_json, 'clean:leftovers']
+
+    desc "Build Standalone Package"
+    task :zip => [:build, :prepare, ZIPPED_STANDALONE]
+
+    task :prepare do
+      output_dir = File.expand_path("..", DESTROOT)
+
+      # We don't need those empty shims
+      Dir[File.join(output_dir, "*")].each do |path|
+        next if File.directory?(path)
+        puts "Deleting file we don't need '#{path}'"
+        File.delete(path)
+      end
+
+      prepare_bundle_env_for_env(standalone: true)
+
+      cp("install", File.join(output_dir, "install"))
+      cp("uninstall", File.join(output_dir, "uninstall"))
+      cp("common.sh", File.join(output_dir, "common.sh"))
+      cp("bundle_update_checker.rb", File.join(DESTROOT, "bundle_update_checker.rb"))
+      cp("README.txt", File.join(output_dir, "README.txt"))
+    end
+
+    task :upload_package do
+      upload_package_to_s3(is_standalone: true)
+      upload_latest(is_standalone: true)
+    end
+
+    task :update_version_json do
+      update_version_json(is_standalone: true)
+    end
+
+    task :prepare_cask_template do
+      brew_template_path = File.join(File.dirname(__FILE__), "cask", "fastlane.rb.template")
+      brew_file_path = File.join(File.dirname(__FILE__), "cask", "fastlane.rb")
+
+      template = File.read(brew_template_path)
+      template.gsub!("{{CURRENT_VERSION}}", BUNDLE_VERSION.to_s)
+
+      sha256sum = Digest::SHA256.file(ZIPPED_STANDALONE).hexdigest
+      template.gsub!("{{SHA_NUM}}", sha256sum)
+
+      File.write(brew_file_path, template)
+    end
+  end
+
   task :version do
     puts BUNDLE_VERSION
   end
@@ -38,7 +119,6 @@ namespace :bundle do
     FastlaneRake.bundle_env_task,
   ].concat(FastlaneRake.install_gems_tasks) << :gem_cleanup
 
-  desc "Run gem cleanup"
   task :gem_cleanup do
     execute 'Gem Clean Up', [BUNDLE_ENV, 'gem', 'cleanup']
   end
@@ -69,7 +149,6 @@ namespace :bundle do
     end
   end
 
-  desc "Creates a VERSION file in the root of the bundle"
   task :stamp_version do
     path = File.join(DESTROOT, 'VERSION')
     File.open(path, 'w') { |f| f.write "#{BUNDLE_VERSION}\n"}
@@ -101,17 +180,10 @@ namespace :bundle do
     end
   end
 
-  desc "Test bundle"
-  task :test => :build_tools do
-    execute 'Test', [BUNDLE_ENV, 'fastlane', 'actions']
-  end
-
-  desc 'Copy the parse_env.rb script into the root of the bundle'
   file "#{DESTROOT}/parse_env.rb"  do
     cp 'parse_env.rb', "#{DESTROOT}/parse_env.rb"
   end
 
-  desc "Copy all the shims and bins."
   task :copy_all_shims_and_bins => [
     "#{DESTROOT}/fastlane",
     "#{FULL_BUNDLE_PATH}/fastlane",
@@ -139,53 +211,14 @@ namespace :bundle do
 
   task :copy_scripts => [:copy_all_shims_and_bins, "#{DESTROOT}/parse_env.rb"]
 
-  desc "Responsible for preparing the actual bundle for the fastlane standalone"
-  desc "to also include the install script and other helper files"
-  task :standalone_bundle do
-    output_dir = File.expand_path("..", DESTROOT)
+  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, :copy_scripts]
 
-    # We don't need those empty shims
-    Dir[File.join(output_dir, "*")].each do |path|
-      next if File.directory?(path)
-      puts "Deleting file we don't need '#{path}'"
-      File.delete(path)
-    end
-
-    prepare_bundle_env_for_env(standalone: true)
-
-    cp("install", File.join(output_dir, "install"))
-    cp("uninstall", File.join(output_dir, "uninstall"))
-    cp("common.sh", File.join(output_dir, "common.sh"))
-    cp("bundle_update_checker.rb", File.join(DESTROOT, "bundle_update_checker.rb"))
-    cp("README.txt", File.join(output_dir, "README.txt"))
+  file ZIPPED_BUNDLE do
+    execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', FULL_BUNDLE_PATH, ZIPPED_BUNDLE]
   end
 
-  desc "Prepare current Cask file by substituting the correct values in the template"
-  task :prepare_cask_template do
-    brew_template_path = File.join(File.dirname(__FILE__), "cask", "fastlane.rb.template")
-    brew_file_path = File.join(File.dirname(__FILE__), "cask", "fastlane.rb")
-
-    template = File.read(brew_template_path)
-    template.gsub!("{{CURRENT_VERSION}}", BUNDLE_VERSION.to_s)
-
-    sha256sum = Digest::SHA256.file(ZIPPED_STANDALONE).hexdigest
-    template.gsub!("{{SHA_NUM}}", sha256sum)
-
-    File.write(brew_file_path, template)
-  end
-
-  desc "Build Standalone Package"
-  task :standalone => [:build, :standalone_bundle, ZIPPED_STANDALONE]
-
-  desc "Build Standalone Bundle"
-  task :build_standalone => [:standalone, :prepare_cask_template]
-
-  desc "Build and Deploy Standalone Bundle"
-  task :build_and_deploy_standalone => [:build_standalone, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:leftovers']
-
-  desc "Responsible for preparing the actual bundle for the Mac app"
-  task :mac_app_bundle do
-    prepare_bundle_env_for_env(standalone: false)
+  file ZIPPED_STANDALONE do
+    execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', FULL_BUNDLE_PATH, ZIPPED_STANDALONE]
   end
 
   # Update the bundle-env file to contain information
@@ -201,43 +234,6 @@ namespace :bundle do
     puts "Updated '#{path}' for IS_STANDALONE environment '#{standalone}'"
   end
 
-  desc "Build complete dist bundle"
-  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, :copy_scripts]
-
-  desc "Compress the bundle into a zipfile for distribution"
-  file ZIPPED_BUNDLE do
-    execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', FULL_BUNDLE_PATH, ZIPPED_BUNDLE]
-  end
-
-  desc "Compress the STANDALONE bundle into a zipfile for distribution"
-  file ZIPPED_STANDALONE do
-    execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', FULL_BUNDLE_PATH, ZIPPED_STANDALONE]
-  end
-
-  desc "Bundle the whole bundle"
-  task :bundle => [:build, ZIPPED_BUNDLE]
-
-  desc 'Upload Mac app bundle to S3'
-  task :upload_bundle do
-    upload_bundle_to_s3
-  end
-
-  desc 'Update Mac app version JSON on S3'
-  task :update_bundle_version_json do
-    update_version_json
-  end
-
-  desc 'Upload Standalone Bundle to S3'
-  task :upload_standalone_bundle do
-    upload_bundle_to_s3(is_standalone: true)
-    upload_latest(is_standalone: true)
-  end
-
-  desc 'Update Standalone version JSON on S3'
-  task :update_standalone_bundle_version_json do
-    update_version_json(is_standalone: true)
-  end
-
   def upload_latest(is_standalone: false)
     latest_path = is_standalone ? "fastlane/standalone/latest.zip" : "fastlane/latest.zip"
     fastlane_path = is_standalone ? "fastlane/standalone/fastlane.zip" : "fastlane/fastlane.zip"
@@ -248,7 +244,7 @@ namespace :bundle do
     fastlane_obj.acl = :public_read
   end
 
-  def upload_bundle_to_s3(is_standalone: false)
+  def upload_package_to_s3(is_standalone: false)
     path = is_standalone ? "fastlane/standalone/#{ZIPPED_STANDALONE}" : "fastlane/#{ZIPPED_BUNDLE}"
     s3_path = is_standalone ? Pathname.new(ZIPPED_STANDALONE) : Pathname.new(ZIPPED_BUNDLE)
     obj = s3_bucket.objects[path].write(s3_path)
@@ -275,22 +271,6 @@ namespace :bundle do
     bucket = ENV['FASTLANE_S3_STORAGE_BUCKET']
     s3.buckets[bucket]
   end
-
-  desc 'Make sure that there is an update that needs to be bundled before building'
-  task :check_if_bundle_is_necessary do
-    obj = s3_bucket.objects['fastlane/version.json']
-    json = JSON.parse obj.read
-    version_on_s3 = Gem::Version.new(json['version'])
-    unless version_on_s3 < Gem::Version.new(FASTLANE_GEM_VERSION)
-      puts "****** No need to build the bundle because #{version_on_s3} is already on S3! ******"
-      exit 0
-    else
-      puts "****** BUILDING VERSION #{FASTLANE_GEM_VERSION} ******"
-    end
-  end
-
-  desc "Create and save the bundle for CI."
-  task :ci_bundle => [:check_if_bundle_is_necessary, :bundle, :upload_bundle, :update_bundle_version_json, 'clean:leftovers']
 
   namespace :clean do
     task :workbench do
