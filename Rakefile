@@ -141,7 +141,7 @@ namespace :bundle do
 
   desc "Responsible for preparing the actual bundle for the fastlane standalone"
   desc "to also include the install script and other helper files"
-  task :finish_fastlane_standalone_bundle do
+  task :standalone_bundle do
     output_dir = File.expand_path("..", DESTROOT)
 
     # We don't need those empty shims
@@ -174,14 +174,17 @@ namespace :bundle do
     File.write(brew_file_path, template)
   end
 
+  desc "Build Standalone Package"
+  task :standalone => [:build, :standalone_bundle, ZIPPED_STANDALONE]
+
   desc "Build Standalone Bundle"
-  task :build_standalone => [:build, :finish_fastlane_standalone_bundle, ZIPPED_STANDALONE, :prepare_cask_template]
+  task :build_standalone => [:standalone, :prepare_cask_template]
 
   desc "Build and Deploy Standalone Bundle"
   task :build_and_deploy_standalone => [:build_standalone, :upload_standalone_bundle, :update_standalone_bundle_version_json, 'clean:leftovers']
 
   desc "Responsible for preparing the actual bundle for the Mac app"
-  task :finish_fastlane_mac_app_bundle do
+  task :mac_app_bundle do
     prepare_bundle_env_for_env(standalone: false)
   end
 
@@ -265,11 +268,12 @@ namespace :bundle do
   end
 
   def s3_bucket
-    ENV['AWS_ACCESS_KEY_ID'] = ENV['CI_AGENT_AWS_ACCESS_KEY']
-    ENV['AWS_SECRET_ACCESS_KEY'] = ENV['CI_AGENT_AWS_SECRET_ACCESS_KEY']
-    ENV['AWS_REGION'] = 'us-east-1'
+    ENV['AWS_ACCESS_KEY_ID'] = ENV['FASTLANE_AWS_ACCESS_KEY']
+    ENV['AWS_SECRET_ACCESS_KEY'] = ENV['FASTLANE_AWS_SECRET_ACCESS_KEY']
+    ENV['AWS_REGION'] = ENV['FASTLANE_S3_REGION']
     s3 = AWS::S3.new
-    s3.buckets['kits-crashlytics-com']
+    bucket = ENV['FASTLANE_S3_STORAGE_BUCKET']
+    s3.buckets[bucket]
   end
 
   desc 'Make sure that there is an update that needs to be bundled before building'
