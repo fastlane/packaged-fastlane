@@ -230,6 +230,11 @@ namespace :package do
     placeholder = "{{IS_STANDALONE}}"
     raise "Could not find placeholder #{placeholder} in '#{path}'" unless content.include?(placeholder)
     content.gsub!(placeholder, standalone.to_s)
+    if !standalone
+      homebrew_placeholder = "{{IS_INSTALLED_VIA_HOMEBREW}}"
+      raise "Could not find placeholder #{homebrew_placeholder} in '#{path}'" unless content.include?(homebrew_placeholder)
+      content.gsub!(homebrew_placeholder, standalone.to_s)
+    end
     File.write(path, content)
     puts "Updated '#{path}' for IS_STANDALONE environment '#{standalone}'"
   end
@@ -281,7 +286,7 @@ namespace :package do
       rm_rf DOWNLOAD_DIR
     end
 
-    task :bundle do
+    task :package do
       rm_rf Dir['bundle-*/']
     end
 
@@ -290,7 +295,7 @@ namespace :package do
     end
 
     desc "Clean build leftovers"
-    task :leftovers => [:workbench, :downloads, :bundle]
+    task :leftovers => [:workbench, :downloads, :package]
 
     desc "Clean all artefacts, including downloads, and zip."
     task :all => [:leftovers, :zip]
