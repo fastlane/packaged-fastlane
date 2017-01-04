@@ -23,10 +23,10 @@ ZIPPED_STANDALONE = "bundle-#{BUNDLE_VERSION}.zip"
 namespace :package do
 
   namespace :mac_app do
-    desc "Build and Deploy Mac App Package"
+    desc "Build and deploy for Fabric Mac app"
     task :deploy => [:check_if_update_is_necessary, :zip, :upload_package, :update_version_json, 'clean:leftovers']
 
-    desc "Zip up the package for Mac app"
+    desc "Build package for Fabric Mac app"
     task :zip => [:build, :prepare, ZIPPED_BUNDLE]
 
     task :prepare do
@@ -55,10 +55,10 @@ namespace :package do
   end
 
   namespace :standalone do
-    desc "Build and Deploy Standalone Package"
+    desc "Build and deploy package"
     task :deploy => [:standalone, :prepare_cask_template, :upload_standalone_bundle, :update_version_json, 'clean:leftovers']
 
-    desc "Build Standalone Package"
+    desc "Build package"
     task :zip => [:build, :prepare, ZIPPED_STANDALONE]
 
     task :prepare do
@@ -103,8 +103,9 @@ namespace :package do
     end
   end
 
+  desc "fastlane-#{FASTLANE_GEM_VERSION}"
   task :version do
-    puts BUNDLE_VERSION
+    puts "fastlane-#{FASTLANE_GEM_VERSION}"
   end
 
   task :build_ruby => FastlaneRake.ruby_task
@@ -154,7 +155,6 @@ namespace :package do
     File.open(path, 'w') { |f| f.write "#{BUNDLE_VERSION}\n"}
   end
 
-  desc "Verifies that no binaries in the bundle link to incorrect dylibs"
   task :verify_linkage => :remove_unneeded_files do
     skip = %w( .h .rb .py .pyc .tmpl .pem .png .ttf .css .rhtml .js .sample )
     Dir.glob(File.join(BUNDLE_DESTROOT, '**/*')).each do |path|
