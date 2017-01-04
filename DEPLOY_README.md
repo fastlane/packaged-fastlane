@@ -38,12 +38,25 @@ cp -R fastlane_lib /usr/local/lib
 ### Cleanup
 Run `rake package:clean:all` to clean up everything from the package you created and start fresh.
 
-### TeamCity
-TeamCity runs `rake package:mac_app:deploy` which has the additional task of pushing the newly built package to S3 and also bumping the version number in the `version.json` file to reflect the most recent version of the gem.
+## Deployment
+### Mac App
+The CI job 'Fastlane Mac App Package' will build the package, upload to S3 and update the `version.json` file to the package's versions of _fastlane_.
 
 Currently, there are still issues with adding that second VCS root to the job to trigger the build, so kicking it off manually is necessary and as we've seen since we have shipped, it is not the worst thing in the world that this doesnt get kicked off automatically from `fastlane` pushes.
 
 That being said, the designed behavior is that if this job does run, it will check to see if the `version.json` is behind the version on RubyGems before it will continue to build. If the `version.json` is up to date, the job will finish and no new package will be built or uploaded.
+
+### Standalone
+The 'Fastlane Standalone Package' job, will build the package, upload to S3 and update the `standalone/version.json` file with the package's version number.
+
+Currently, updating the Cask is done manually.
+
+- Download the zip file from CI into the _packaged-fastlane_ directory
+- Run `rake package:standalone:prepare_cask_template` to generate the new cask file
+- Run `brew cask audit --download cask/fastlane.rb `
+- Run `brew cask style --fix cask/fastlane.rb `
+- Submit a PR to https://github.com/caskroom/homebrew-cask with the updated `fastlane.rb` cask file
+
 
 ## Using the bundle
 In terminal, call `path/to/destroot/fastlane` followed by a normal call to any `fastlane` action or lane.
