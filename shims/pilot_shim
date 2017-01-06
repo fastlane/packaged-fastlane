@@ -1,4 +1,3 @@
 #!/bin/bash
 
-echo 'Executing fastlane tools directly has been deprecated.'
-echo 'Please run pilot by running `fastlane pilot`.'
+exec "`dirname "${BASH_SOURCE[0]}"`/bundle/bin/bundle-env" fastlane pilot "$@"
