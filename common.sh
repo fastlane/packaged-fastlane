@@ -27,6 +27,7 @@ echoc() {
   local color=$2
   set_color $color
   echo $message
+  reset_color
 }
 
 reset_color() {
