@@ -22,6 +22,7 @@ else
   set_color yellow
   read -p "Do you want to uninstall fastlane from $FASTLANE_DIR? (y/n) " -n 1 choice
   echo ""
+  reset_color
 fi
 
 case "$choice" in
