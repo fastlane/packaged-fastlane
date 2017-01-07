@@ -1,4 +1,3 @@
 #!/bin/bash
 
-echo 'Executing fastlane tools directly has been deprecated.'
-echo 'Please run produce by running `fastlane produce`.'
+exec "`dirname "${BASH_SOURCE[0]}"`/bundle/bin/bundle-env" fastlane produce "$@"

@@ -1,4 +1,3 @@
 #!/bin/bash
 
-echo 'Executing fastlane tools directly has been deprecated.'
-echo 'Please run deliver by running `fastlane deliver`.'
+exec "`dirname "${BASH_SOURCE[0]}"`/bundle/bin/bundle-env" fastlane deliver "$@"
