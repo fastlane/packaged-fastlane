@@ -11,4 +11,4 @@ Run tasks in the `package:clean` namespace to clean up after yourself if you'd l
 In a terminal, call `path/to/bundle-x.x.x/fastlane` followed by a normal call to any `fastlane` action, lane, or tool (i.e. snapshot, gym, etc.).
 
 ## Background 🍫
-The heavy lifting of this project is handled by work done by the [CocoPods team](https://cocoapods.org/about#team) for the [CocoaPods-app](https://github.com/CocoaPods/CocoaPods-app). They deserve many thanks for helping to make _packaged fastlane_ possible!
+The heavy lifting of this project is handled by work done by the [CocoaPods team](https://cocoapods.org/about#team) for the [CocoaPods-app](https://github.com/CocoaPods/CocoaPods-app). They deserve many thanks for helping to make _packaged fastlane_ possible!
