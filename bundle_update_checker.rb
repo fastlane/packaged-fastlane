@@ -21,9 +21,8 @@ begin
   json_string = resp.body
   json = JSON.parse(json_string)
   available_bundle_version = json['bundle_version']
-  path_to_version = version_file
 
-  version_string = File.open(path_to_version) { |file| file.each_line.first }
+  version_string = File.open(version_file) { |file| file.each_line.first }
   current_bundle_version = version_string.chomp.to_f
 
   if available_bundle_version > current_bundle_version
