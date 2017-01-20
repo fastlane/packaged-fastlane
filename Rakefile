@@ -78,6 +78,8 @@ namespace :package do
       cp("common.sh", File.join(output_dir, "common.sh"))
       cp("bundle_update_checker.rb", File.join(DESTROOT, "bundle_update_checker.rb"))
       cp("README.txt", File.join(output_dir, "README.txt"))
+      cp("NOTICE.txt", File.join(output_dir, "NOTICE.txt"))
+      cp("THIRDPARTYLICENSES.txt", File.join(output_dir, "THIRDPARTYLICENSES.txt"))
     end
 
     task :upload_package do
