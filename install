@@ -62,8 +62,8 @@ mkdir -p $FASTLANE_DIR
 # We have to skip the 2 error messages below, which are shown if a previous version of fastlane
 # was installed via the bundle
 cp -R "$CURRENT_DIR/fastlane_lib/" $FASTLANE_DIR
-cp "$CURRENT_DIR/NOTICE.txt" $FASTLANE_DIR
-cp "$CURRENT_DIR/THIRDPARTYLICENSES.txt" $FASTLANE_DIR
+cp "$CURRENT_DIR/NOTICE.txt" "$FASTLANE_DIR/.."
+cp "$CURRENT_DIR/THIRDPARTYLICENSES.txt" "$FASTLANE_DIR/.."
 
 echoc "Successfully copied fastlane to $FASTLANE_DIR" green
 echo ""
