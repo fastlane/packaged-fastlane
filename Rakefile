@@ -184,6 +184,16 @@ namespace :package do
     cp 'parse_env.rb', "#{DESTROOT}/parse_env.rb"
   end
 
+  file "#{DESTROOT}/NOTICE.txt" do
+    cp 'NOTICE.txt', "#{DESTROOT}/NOTICE.txt"
+  end
+
+  file "#{DESTROOT}/THIRDPARTYLICENSES.txt" do
+    cp "THIRDPARTYLICENSES.txt", "#{DESTROOT}/THIRDPARTYLICENSES.txt"
+  end
+
+  task :copy_license_info => ["#{DESTROOT}/THIRDPARTYLICENSES.txt", "#{DESTROOT}/NOTICE.txt"]
+
   task :copy_all_shims_and_bins => [
     "#{DESTROOT}/fastlane",
     "#{FULL_BUNDLE_PATH}/fastlane",
@@ -211,7 +221,7 @@ namespace :package do
 
   task :copy_scripts => [:copy_all_shims_and_bins, "#{DESTROOT}/parse_env.rb"]
 
-  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, :copy_scripts]
+  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, :copy_scripts, :copy_license_info]
 
   file ZIPPED_BUNDLE do
     execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', FULL_BUNDLE_PATH, ZIPPED_BUNDLE]
