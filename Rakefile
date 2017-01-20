@@ -4,7 +4,7 @@ require 'json'
 load './bundle_tasks.rake'
 extend FastlaneRake
 
-BUNDLE_VERSION = 1.5
+BUNDLE_VERSION = 1.6
 
 FULL_BUNDLE_PATH = FastlaneRake::FULL_BUNDLE_PATH
 VERBOSE = FastlaneRake::VERBOSE
