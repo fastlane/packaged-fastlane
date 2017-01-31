@@ -91,6 +91,7 @@ namespace :package do
       update_version_json(is_standalone: true)
     end
 
+    desc "Prepare Homebrew cask file"
     task :prepare_cask_template do
       brew_template_path = File.join(File.dirname(__FILE__), "cask", "fastlane.rb.template")
       brew_file_path = File.join(File.dirname(__FILE__), "cask", "fastlane.rb")
