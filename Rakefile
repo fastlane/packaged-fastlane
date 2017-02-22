@@ -14,6 +14,7 @@ WORKBENCH_DIR = FastlaneRake::WORKBENCH_DIR
 DOWNLOAD_DIR = FastlaneRake::DOWNLOAD_DIR
 DESTROOT = FastlaneRake::DESTROOT
 FASTLANE_GEM_VERSION = FastlaneRake::FASTLANE_GEM_VERSION
+XCODE_PATH = '/Applications/Xcode-7.3.1.app'
 
 load './shims_and_bins.rake'
 
@@ -104,6 +105,10 @@ namespace :package do
 
       File.write(brew_file_path, template)
     end
+  end
+
+  task :xcode_select do
+    puts `sudo xcode-select --switch #{XCODE_PATH}`
   end
 
   desc "fastlane-#{FASTLANE_GEM_VERSION}"
@@ -224,7 +229,7 @@ namespace :package do
 
   task :copy_scripts => [:copy_all_shims_and_bins, "#{DESTROOT}/parse_env.rb"]
 
-  task :build => [:build_tools, :remove_unneeded_files, :stamp_version, :copy_scripts, :copy_license_info]
+  task :build => [:xcode_select, :build_tools, :remove_unneeded_files, :stamp_version, :copy_scripts, :copy_license_info]
 
   file ZIPPED_BUNDLE do
     execute 'DITTO', ['ditto', '-ck', '--noqtn', '--sequesterRsrc', FULL_BUNDLE_PATH, ZIPPED_BUNDLE]
