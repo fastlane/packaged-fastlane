@@ -63,9 +63,23 @@ module FastlaneRake
   # Prefer the SDK of the DEPLOYMENT_TARGET, but otherwise fallback to the current one.
   sdk_dir = File.join(`xcrun --show-sdk-platform-path --sdk macosx`.strip, 'Developer/SDKs')
   if Dir.entries(sdk_dir).include?(DEPLOYMENT_TARGET_SDK)
+    puts 'if'
+    puts "***************"
+    puts "***************"
+    puts DEPLOYMENT_TARGET_SDK
+    puts "***************"
+    puts "***************"
     SDKROOT = File.join(sdk_dir, DEPLOYMENT_TARGET_SDK)
+    puts SDKROOT
   else
+    puts 'else'
+    puts "***************"
+    puts "***************"
+    puts DEPLOYMENT_TARGET_SDK
+    puts "***************"
+    puts "***************"
     SDKROOT = File.expand_path(`xcrun --show-sdk-path --sdk macosx`.strip)
+    puts SDKROOT
   end
   unless File.exist?(SDKROOT)
     puts "[!] Unable to find a SDK for the Platform target `macosx`."
