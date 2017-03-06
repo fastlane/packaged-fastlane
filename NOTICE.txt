@@ -119,3 +119,4 @@ xcpretty-travis-formatter
 xml-simple
 yard
 zlib
+tty-screen
