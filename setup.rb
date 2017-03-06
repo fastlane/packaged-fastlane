@@ -26,7 +26,7 @@ module FastlaneRake
 
   # Ideally this would be deployment target, but
   # we use generics which didn't exist in 10.10.
-  DEPLOYMENT_TARGET_SDK = "MacOSX#{RELEASE_PLATFORM}.sdk"
+  DEPLOYMENT_TARGET_SDK = "MacOSX.sdk"
 
   $build_started_at = Time.now
   at_exit do
