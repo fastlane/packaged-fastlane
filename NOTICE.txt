@@ -1,4 +1,4 @@
-Copyright 2016 Twitter.  All Rights Reserved.
+Copyright 2017 Google.  All Rights Reserved.
 
 Licensed under the MIT license, you can fine the full license in LICENSE file.
 
