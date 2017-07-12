@@ -261,10 +261,12 @@ namespace :package do
     latest_path = is_standalone ? "fastlane/standalone/latest.zip" : "fastlane/latest.zip"
     fastlane_path = is_standalone ? "fastlane/standalone/fastlane.zip" : "fastlane/fastlane.zip"
     s3_path = is_standalone ? Pathname.new(ZIPPED_STANDALONE) : Pathname.new(ZIPPED_BUNDLE)
-    latest_obj = s3_bucket.objects[latest_path].write(s3_path)
-    fastlane_obj = s3_bucket.objects[fastlane_path].write(s3_path)
-    latest_obj.acl = :public_read
-    fastlane_obj.acl = :public_read
+    options_hash = {
+      :content_disposition => 'attachement; filename="fastlane.zip',
+      :acl => :public_read
+    }
+    latest_obj = s3_bucket.objects[latest_path].write(s3_path, options_hash)
+    fastlane_obj = s3_bucket.objects[fastlane_path].write(s3_path, options_hash)
   end
 
   def upload_package_to_s3(is_standalone: false)
