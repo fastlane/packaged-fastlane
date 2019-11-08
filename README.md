@@ -13,3 +13,11 @@
   1. Installs `bundler` and `fastlane`
 - Uninstall by running `./uninstall`
   1. Deletes `~/.fastlane/bin`
+
+## Deployment
+
+### Cask
+Updated the `cask/fastlane.rb` if necessary and PR into https://github.com/Homebrew/homebrew-cask/blob/master/Casks/fastlane.rb
+
+### fastlane.zip
+zip this entire directoy and PR into https://github.com/fastlane/fastlane.tools/blob/gh-pages/fastlane.zip
