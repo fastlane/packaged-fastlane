@@ -5,6 +5,12 @@
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$CURRENT_DIR/common.sh"
 
+PACKAGED_FASTLANE_VERSION=2.0.0
+PACKAGED_RUBY_VERSION=2.4.5
+
+PACKAGED_FASTLANE_VERSION_FILE="$FASTLANE_DIR/PACKAGED_FASTLANE_VERSION.txt"
+PACKAGED_RUBY_VERSION_FILE="$FASTLANE_DIR/PACKAGED_RUBY_VERSION.txt"
+
 usage() {
   echo "./install [-u] [-p] [-b]"
   echo "    -u : Uninstall fastlane if it exists in $FASTLANE_DIR"
@@ -13,68 +19,124 @@ usage() {
   exit 1
 }
 
-INSTALLED_VIA_HOMEBREW=false
-
+# Reads all options passed in and sets environment variables or shows usage/help
 while getopts ":pub" opt; do
   case $opt in
     p ) SKIP_SETTING_PATH=1;;
-    u ) DO_UNINSTALL=1;;
     b ) INSTALLED_VIA_HOMEBREW=true;;
     * ) usage ;;
   esac
 done
 
+install_or_upgrade_via_homebrew()
+{
+  PACKAGE=$1
+  list_output=`brew list | grep $PACKAGE`
+  outdated_output=`brew outdated | grep $PACKAGE`
+
+  if [[ ! -z "$list_output" ]]; then
+    echo "$PACKAGE is installed"
+    if [[ -z "$outdated_output" ]]; then
+      echo "$PACKAGE is updated"
+    else
+      echo "$PACKAGE is not updated"
+      prompt_to_install_or_upgrade $PACKAGE
+      brew upgrade $PACKAGE
+    fi
+  else
+    echo "$PACKAGE is not installed."
+    prompt_to_install_or_upgrade $PACKAGE
+    brew install $PACKAGE
+  fi
+}
+
+prompt_to_install_or_upgrade()
+{
+  PACKAGE=$1
+
+  read -p "The installer needs to install/upgrade $PACKAGE with brew. Is that okay? (y/N) " -n 1 choice
+  echo ""
+
+  case "$choice" in
+  y|Y )
+    # Nothing
+  ;;
+  * )
+    echoc "Cancelled uninstall process" red
+    exit 1
+  ;;
+  esac
+}
+
+# Check if fastlane already exists
 if [ -d "$FASTLANE_DIR" ]; then
   echoc "fastlane is already installed at $FASTLANE_DIR" yellow
-  if [ "$DO_UNINSTALL" == "1" ]; then
-    choice="y"
-  else
-    read -p "Do you want to reinstall fastlane? The old directory, including any changes you made, will be removed! (y/N) " -n 1 choice
-    echo ""
+
+  # Check if old version and clean it up
+  if [ ! -f $PACKAGED_FASTLANE_VERSION_FILE ]; then
+    echoc "Found old version of brew packaged fastlane. Cleaning up..." yellow
+    "$CURRENT_DIR/uninstall" -y
   fi
-
-  case $choice in
-    y|Y )
-      echoc "The installer will now run the uninstall script to remove your existing fastlane bundle..." magenta
-
-      if [ "$DO_UNINSTALL" == "1" ]; then
-        "$CURRENT_DIR/uninstall" -y
-      else
-        "$CURRENT_DIR/uninstall"
-      fi
-
-      if [[ $? != 0 ]]; then
-        echoc "There was a problem uninstalling the previous fastlane bundle, aborting installation..." red
-        exit 1
-      fi
-      echoc "Done uninstalling, your regular installation will now commence. 🚕 💨" green
-      ;;
-    * )
-      echoc "Installation aborted, nothing to be done!" green
-      exit 1
-      ;;
-  esac
 fi
 
-# Copy fastlane to ~/.fastlane
-echoc "Installing fastlane to $FASTLANE_DIR... this might take a few seconds" yellow
-mkdir -p $FASTLANE_DIR
-# We have to skip the 2 error messages below, which are shown if a previous version of fastlane
-# was installed via the bundle
-cp -R "$CURRENT_DIR/fastlane_lib/" $FASTLANE_DIR
+echoc "Installing fastlane to $FASTLANE_DIR..." yellow
+
+#
+# Install ruby-build and Ruby version $PACKAGED_RUBY_VERSION only if needed
+#
+if [[ -f $PACKAGED_RUBY_VERSION_FILE && $(< $PACKAGED_RUBY_VERSION_FILE) == "$PACKAGED_RUBY_VERSION" ]]; then
+  echo "Ruby $PACKAGED_RUBY_VERSION already installed"
+else
+  echo "Ruby $PACKAGED_RUBY_VERSION not installed. Preparing to install now. This might take a few minutes"
+  brew update >/dev/null 2>&1
+
+  install_or_upgrade_via_homebrew "ruby-build"
+  install_or_upgrade_via_homebrew "openssl"
+
+  echoc "Building Ruby $PACKAGED_RUBY_VERSION... this also might take a few minutes" yellow
+
+  mkdir -p "$FASTLANE_DIR/bundle"
+
+  OPENSSL_DIR=$(brew --prefix openssl)
+  if [ $? -ne 0 ]; then
+    echoc "Couldn't find path of OpenSSL. Cancelled install process..." red
+    exit 1
+  fi
+
+  echo "Linking Ruby $PACKAGED_RUBY_VERSION to OpenSSL at $OPENSSL_DIR"
+  RUBY_CONFIGURE_OPTS=--with-openssl-dir="$OPENSSL_DIR" ruby-build $PACKAGED_RUBY_VERSION "$FASTLANE_DIR/bundle"
+
+  echo "$PACKAGED_RUBY_VERSION" >> $PACKAGED_RUBY_VERSION_FILE
+fi
+
+# Copy helpers for keeping a clean execution environment
+cp "$CURRENT_DIR/bundle-env" "$FASTLANE_DIR/bundle/bin"
+cp "$CURRENT_DIR/parse_env.rb" "$FASTLANE_DIR"
+
+# Install bundler and fastlane
+$FASTLANE_DIR/bundle/bin/bundle-env gem install bundler --no-document --env-shebang
+$FASTLANE_DIR/bundle/bin/bundle-env gem install fastlane --no-document --env-shebang
+
+# Copy the fastlane executable to run fastlane in the bundled environment
+cp "$CURRENT_DIR/fastlane_shim" "$FASTLANE_DIR/fastlane"
+
+# Copy legal stuff
 cp "$CURRENT_DIR/NOTICE.txt" "$FASTLANE_DIR/.."
 cp "$CURRENT_DIR/THIRDPARTYLICENSES.txt" "$FASTLANE_DIR/.."
 
-echoc "Successfully copied fastlane to $FASTLANE_DIR" green
+echoc "Successfully installed fastlane to $FASTLANE_DIR" green
 echo ""
 
-# Set the FASTLANE_INSTALLED_VIA_HOMEWBREW flag in bundle-env
-BUNDLE_ENV_PATH="$FASTLANE_DIR/bundle/bin/bundle-env"
-sed -i '' "s/{{IS_INSTALLED_VIA_HOMEBREW}}/$INSTALLED_VIA_HOMEBREW/g" $BUNDLE_ENV_PATH
+echo "$PACKAGED_FASTLANE_VERSION" >> $PACKAGED_FASTLANE_VERSION_FILE
 
 # Update the contained fastlane install
 reset_color
 "$FASTLANE_DIR/fastlane" update_fastlane
+
+if [ $? -ne 0 ]; then
+  echoc "Failed to update fastlane after installing fastlane for unkown reason. This shouldn't have happened..." red
+  exit 1
+fi
 
 manual_installation() {
   echoc "Please add the following line to your $shell profile:" yellow

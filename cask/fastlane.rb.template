@@ -11,3 +11,18 @@ cask 'fastlane' do
 
   uninstall script: { executable: "#{staged_path}/uninstall", args: ['-y'], sudo: false }
 end
+
+This is how its created but you know... not here
+#  desc "Prepare Homebrew cask file"
+#  task :prepare_cask_template do
+#    brew_template_path = File.join(File.dirname(__FILE__), "cask", "fastlane.rb.template")
+#    brew_file_path = File.join(File.dirname(__FILE__), "cask", "fastlane.rb")
+#
+#    template = File.read(brew_template_path)
+#    template.gsub!("{{CURRENT_VERSION}}", BUNDLE_VERSION.to_s)
+#
+#    sha256sum = Digest::SHA256.file(ZIPPED_STANDALONE).hexdigest
+#    template.gsub!("{{SHA_NUM}}", sha256sum)
+#
+#    File.write(brew_file_path, template)
+#  end
