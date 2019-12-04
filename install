@@ -12,10 +12,10 @@ PACKAGED_FASTLANE_VERSION_FILE="$FASTLANE_DIR/PACKAGED_FASTLANE_VERSION.txt"
 PACKAGED_RUBY_VERSION_FILE="$FASTLANE_DIR/PACKAGED_RUBY_VERSION.txt"
 
 usage() {
-  echo "./install [-u] [-p] [-b]"
-  echo "    -u : Uninstall fastlane if it exists in $FASTLANE_DIR"
+  echo "./install [-p] [-b] [-a]"
   echo "    -p : Don't update the path automatically"
   echo "    -b : Installed via homebrew"
+  echo "    -a : autoupdate ruby-build and openssl"
   exit 1
 }
 
@@ -24,6 +24,7 @@ while getopts ":pub" opt; do
   case $opt in
     p ) SKIP_SETTING_PATH=1;;
     b ) INSTALLED_VIA_HOMEBREW=true;;
+    a ) NO_PROMPS=1;;
     * ) usage ;;
   esac
 done
@@ -52,6 +53,10 @@ install_or_upgrade_via_homebrew()
 
 prompt_to_install_or_upgrade()
 {
+  if [ "$NO_PROMPS" == "1" ]; then
+    return
+  fi
+
   PACKAGE=$1
 
   read -p "The installer needs to install/upgrade $PACKAGE with brew. Is that okay? (y/N) " -n 1 choice

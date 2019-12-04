@@ -1,0 +1,20 @@
+#!/bin/bash
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+
+function gem_cleanup() {
+  EXCLUDE_SYSTEM_GEMS="true" "${DIR}/bundle/bin/bundle-env" gem cleanup
+}
+
+if [ "$1" = "update_fastlane" ]; then
+  "${DIR}/bundle/bin/bundle-env" gem update --no-document fastlane
+  gem_cleanup
+else
+  exec "${DIR}/bundle/bin/bundle-env" fastlane "$@"
+fi;

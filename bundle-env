@@ -17,7 +17,6 @@ unset GEM_CACHE
 # necessary.
 
 export PATH=$BIN:$PATH
-export SSL_CERT_FILE=$PREFIX/share/cacert.pem
 
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
