@@ -1,8 +1,8 @@
 cask 'fastlane' do
-  version :latest
+  version '2.0.0'
   sha256 :no_check
 
-  url 'https://fastlane.tools/fastlane.zip'
+  url "https://fastlane.tools/packaged-fastlane-#{version}.zip"
   name 'fastlane'
   homepage 'https://fastlane.tools/'
 

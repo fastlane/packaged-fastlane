@@ -24,7 +24,7 @@ while getopts ":pub" opt; do
   case $opt in
     p ) SKIP_SETTING_PATH=1;;
     b ) INSTALLED_VIA_HOMEBREW=true;;
-    a ) NO_PROMPS=1;;
+    a ) NO_PROMPTS=1;;
     * ) usage ;;
   esac
 done
@@ -43,17 +43,27 @@ install_or_upgrade_via_homebrew()
       echo "$PACKAGE is not updated"
       prompt_to_install_or_upgrade $PACKAGE
       brew upgrade $PACKAGE
+
+      if [ $? -ne 0 ]; then
+        echo "$PACKAGE failed to install"
+        exit 1
+      fi
     fi
   else
     echo "$PACKAGE is not installed."
     prompt_to_install_or_upgrade $PACKAGE
     brew install $PACKAGE
+
+    if [ $? -ne 0 ]; then
+      echo "$PACKAGE failed to install"
+      exit 1
+    fi
   fi
 }
 
 prompt_to_install_or_upgrade()
 {
-  if [ "$NO_PROMPS" == "1" ]; then
+  if [ "$NO_PROMPTS" == "1" ]; then
     return
   fi
 
@@ -110,6 +120,11 @@ else
 
   echo "Linking Ruby $PACKAGED_RUBY_VERSION to OpenSSL at $OPENSSL_DIR"
   RUBY_CONFIGURE_OPTS=--with-openssl-dir="$OPENSSL_DIR" ruby-build $PACKAGED_RUBY_VERSION "$FASTLANE_DIR/bundle"
+
+  if [ $? -ne 0 ]; then
+    echoc "Failed to build Ruby with ruby-build..." red
+    exit 1
+  fi
 
   echo "$PACKAGED_RUBY_VERSION" >> $PACKAGED_RUBY_VERSION_FILE
 fi
