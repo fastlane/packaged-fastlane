@@ -17,7 +17,7 @@ jobs:
             - v3-homebrew
       - run: ./install -y
       - run: ~/.fastlane/bin/fastlane --version
-      - run: ./uninstall
+      - run: ./uninstall -y
       - save_cache:
           key: v3-homebrew-{{ epoch }}
           paths:
