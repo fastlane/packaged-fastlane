@@ -1,7 +1,7 @@
 version: 2
 
 jobs:
-  "Execute tests on macOS (Xcode 9.0.1, Ruby 2.3)":
+  "Execute tests on macOS (Xcode 11.0.0)":
     macos:
       xcode: "11.0.0"
     environment:
