@@ -1,0 +1,29 @@
+version: 2
+
+jobs:
+  "Execute tests on macOS (Xcode 9.0.1, Ruby 2.3)":
+    macos:
+      xcode: "11.0.0"
+    environment:
+      LC_ALL: en_US.UTF-8
+      LANG: en_US.UTF-8
+    shell: /bin/bash --login -eo pipefail
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v3-homebrew-{{ epoch }}
+            - v3-homebrew
+      - run:
+          name: Setup Build
+          command: |
+            mkdir -p ~/test-reports
+            echo "2.3" > .ruby-version
+            gem update --system
+
+      - run: ./install -a
+
+      - save_cache:
+          key: v3-homebrew-{{ epoch }}
+          paths:
+            - /usr/local/Homebrew
