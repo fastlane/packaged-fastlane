@@ -19,9 +19,7 @@ set_color() {
     * ) color_val=0;;
   esac
 
-  if tty -s; then
-    tput setaf $color_val
-  fi
+  tty -s && tput setaf $color_val
 }
 
 echoc() {
@@ -33,9 +31,7 @@ echoc() {
 }
 
 reset_color() {
-  if tty -s; then
-    tput sgr0
-  fi
+  tty -s && tput sgr0
 }
 
 # Detect shell environment
