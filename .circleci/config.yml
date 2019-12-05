@@ -25,3 +25,9 @@ jobs:
           key: v3-homebrew-{{ epoch }}
           paths:
             - /usr/local/Homebrew
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "Execute tests on macOS (Xcode 9.0.1, Ruby 2.3)"
