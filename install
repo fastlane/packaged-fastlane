@@ -194,7 +194,6 @@ if [ $? -ne 0 ]; then
       echo -e $LINE_TO_ADD >> $profile_expanded
       echoc "Successfully updated $profile" green
       echoc "Please close the terminal session and restart it to start using fastlane 🚀" green
-      exit 0
     else
       set_color yellow
       read -p "Do you want fastlane to add itself to the PATH by updating your profile? (y/n) " -n 1 choice
@@ -219,3 +218,5 @@ if [ $? -ne 0 ]; then
 else
   echoc "Detected fastlane is already in your path 🚀" green
 fi
+
+echo ""
