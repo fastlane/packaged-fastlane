@@ -21,7 +21,6 @@ usage() {
 
 # Reads all options passed in and sets environment variables or shows usage/help
 while getopts ":pby" opt; do
-  echo "OPT $opt"
   case $opt in
     p ) SKIP_SETTING_PATH=1;;
     b ) INSTALLED_VIA_HOMEBREW=true;;
