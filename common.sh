@@ -19,7 +19,9 @@ set_color() {
     * ) color_val=0;;
   esac
 
-  tput setaf $color_val
+  tty -s && tput setaf $color_val
+
+  # noop if tput has errors to reset exit code
   :
 }
 
@@ -32,7 +34,9 @@ echoc() {
 }
 
 reset_color() {
-  tput sgr0
+  tty -s && tput sgr0
+
+  # noop if tput has errors to reset exit code
   :
 }
 
