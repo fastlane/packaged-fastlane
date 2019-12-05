@@ -218,5 +218,3 @@ if [ $? -ne 0 ]; then
 else
   echoc "Detected fastlane is already in your path 🚀" green
 fi
-
-echo ""
