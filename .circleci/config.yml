@@ -18,7 +18,7 @@ jobs:
           name: Setup Build
           command: |
             mkdir -p ~/test-reports
-            echo "2.3" > .ruby-version
+            echo "2.4" > .ruby-version
             gem update --system
       - run: ./install -a
       - save_cache:
