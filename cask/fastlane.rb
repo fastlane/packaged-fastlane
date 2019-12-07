@@ -8,7 +8,7 @@ cask 'fastlane' do
 
   installer script: {
                       executable: "#{staged_path}/install",
-                      args:       ['-p', '-u', '-b'],
+                      args:       ['-p', '-b', '-y'],
                     }
 
   uninstall script: {
