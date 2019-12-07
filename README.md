@@ -16,8 +16,26 @@
 
 ## Deployment
 
-### Cask
-Updated the `cask/fastlane.rb` if necessary and PR into https://github.com/Homebrew/homebrew-cask/blob/master/Casks/fastlane.rb
+Run `rake package['<new_version>']`
 
-### fastlane.zip
-zip this entire directoy and PR into https://github.com/fastlane/fastlane.tools/blob/gh-pages/fastlane.zip
+This will...
+
+1) Package all needed files in a new zip file at `output/packaged-fastlane-#{new_version}.zip`
+2) Updates `cask/fastlane.rb` with version and sha256
+3) Gives instructions on what to do next
+
+### Example output
+
+```
+➜  rake package["2.0.0"]
+📦 Packaged at /Users/josh/Projects/fastlane/packaged-fastlane/output/packaged-fastlane-2.0.0.zip
+✅ sha256:  e89bf6d1270f4c9455a523c0dafae3cfe2a704e8e9953390dcdef9852f64b4f7
+
+version '2.0.0' to '2.0.0'
+sha256 '8503027d192da59ac1ab5e2715fb103451b178cce035d994b185440b6c9ab1aa' to 'e89bf6d1270f4c9455a523c0dafae3cfe2a704e8e9953390dcdef9852f64b4f7'
+💪 Updated cask/fastlane.rb
+
+🚀 Now do two more things!
+1) Upload zip file to https://github.com/fastlane/fastlane.tools
+2) Update https://github.com/Homebrew/homebrew-cask/blob/master/Casks/fastlane.rb
+```
