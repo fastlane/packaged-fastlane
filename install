@@ -5,12 +5,6 @@
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$CURRENT_DIR/common.sh"
 
-PACKAGED_FASTLANE_VERSION=2.0.0
-PACKAGED_RUBY_VERSION=2.4.5
-
-PACKAGED_FASTLANE_VERSION_FILE="$FASTLANE_DIR/PACKAGED_FASTLANE_VERSION.txt"
-PACKAGED_RUBY_VERSION_FILE="$FASTLANE_DIR/PACKAGED_RUBY_VERSION.txt"
-
 usage() {
   echo "./install [-p] [-b] [-y]"
   echo "    -p : Don't update the path automatically"
@@ -29,125 +23,27 @@ while getopts ":pby" opt; do
   esac
 done
 
-install_or_upgrade_via_homebrew()
-{
-  PACKAGE=$1
-  list_output=`brew list | grep $PACKAGE`
-  outdated_output=`brew outdated | grep $PACKAGE`
-
-  if [[ ! -z "$list_output" ]]; then
-    echo "$PACKAGE is installed"
-    if [[ -z "$outdated_output" ]]; then
-      echo "$PACKAGE is updated"
-    else
-      echo "$PACKAGE is not updated"
-      prompt_to_install_or_upgrade $PACKAGE
-      brew upgrade $PACKAGE
-
-      if [ $? -ne 0 ]; then
-        echo "$PACKAGE failed to install"
-        exit 1
-      fi
-    fi
-  else
-    echo "$PACKAGE is not installed."
-    prompt_to_install_or_upgrade $PACKAGE
-    brew install $PACKAGE
-
-    if [ $? -ne 0 ]; then
-      echo "$PACKAGE failed to install"
-      exit 1
-    fi
-  fi
-}
-
-prompt_to_install_or_upgrade()
-{
-  if [ "$NO_PROMPTS" == "1" ]; then
-    return
-  fi
-
-  PACKAGE=$1
-
-  read -p "The installer needs to install/upgrade $PACKAGE with brew. Is that okay? (y/N) " -n 1 choice
-  echo ""
-
-  case "$choice" in
-  y|Y )
-    # Nothing
-  ;;
-  * )
-    echoc "Cancelled uninstall process" red
-    exit 1
-  ;;
-  esac
-}
-
 # Check if fastlane already exists
 if [ -d "$FASTLANE_DIR" ]; then
   echoc "fastlane is already installed at $FASTLANE_DIR" yellow
-
-  # Check if old version and clean it up
-  if [ ! -f $PACKAGED_FASTLANE_VERSION_FILE ]; then
-    echoc "Found old version of brew packaged fastlane. Cleaning up..." yellow
-    "$CURRENT_DIR/uninstall" -y
-  fi
 fi
 
 echoc "Installing fastlane to $FASTLANE_DIR..." yellow
 
-#
-# Install ruby-build and Ruby version $PACKAGED_RUBY_VERSION only if needed
-#
-if [[ -f $PACKAGED_RUBY_VERSION_FILE && $(< $PACKAGED_RUBY_VERSION_FILE) == "$PACKAGED_RUBY_VERSION" ]]; then
-  echo "Ruby $PACKAGED_RUBY_VERSION already installed"
-else
-  echo "Ruby $PACKAGED_RUBY_VERSION not installed. Preparing to install now. This might take a few minutes"
-  brew update >/dev/null 2>&1
-
-  install_or_upgrade_via_homebrew "ruby-build"
-  install_or_upgrade_via_homebrew "openssl"
-
-  echoc "Building Ruby $PACKAGED_RUBY_VERSION... this also might take a few minutes" yellow
-
-  mkdir -p "$FASTLANE_DIR/bundle"
-
-  OPENSSL_DIR=$(brew --prefix openssl)
-  if [ $? -ne 0 ]; then
-    echoc "Couldn't find path of OpenSSL. Cancelled install process..." red
-    exit 1
-  fi
-
-  echo "Linking Ruby $PACKAGED_RUBY_VERSION to OpenSSL at $OPENSSL_DIR"
-  RUBY_CONFIGURE_OPTS=--with-openssl-dir="$OPENSSL_DIR" ruby-build $PACKAGED_RUBY_VERSION "$FASTLANE_DIR/bundle"
-
-  if [ $? -ne 0 ]; then
-    echoc "Failed to build Ruby with ruby-build..." red
-    exit 1
-  fi
-
-  echo "$PACKAGED_RUBY_VERSION" >> $PACKAGED_RUBY_VERSION_FILE
-fi
-
 # Copy helpers for keeping a clean execution environment
-cp "$CURRENT_DIR/bundle-env" "$FASTLANE_DIR/bundle/bin"
+mkdir -p "$FASTLANE_DIR"
+cp "$CURRENT_DIR/bundle-env" "$FASTLANE_DIR"
 cp "$CURRENT_DIR/parse_env.rb" "$FASTLANE_DIR"
 
 # Install bundler and fastlane
-$FASTLANE_DIR/bundle/bin/bundle-env gem install bundler --no-document --env-shebang
-$FASTLANE_DIR/bundle/bin/bundle-env gem install fastlane --no-document --env-shebang
+$FASTLANE_DIR/bundle-env gem install bundler --no-document --env-shebang
+$FASTLANE_DIR/bundle-env gem install fastlane --no-document --env-shebang
 
 # Copy the fastlane executable to run fastlane in the bundled environment
 cp "$CURRENT_DIR/fastlane_shim" "$FASTLANE_DIR/fastlane"
 
-# Copy legal stuff
-cp "$CURRENT_DIR/NOTICE.txt" "$FASTLANE_DIR/.."
-cp "$CURRENT_DIR/THIRDPARTYLICENSES.txt" "$FASTLANE_DIR/.."
-
 echoc "Successfully installed fastlane to $FASTLANE_DIR" green
 echo ""
-
-echo "$PACKAGED_FASTLANE_VERSION" >> $PACKAGED_FASTLANE_VERSION_FILE
 
 # Update the contained fastlane install
 reset_color

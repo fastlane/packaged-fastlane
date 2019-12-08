@@ -1,5 +1,5 @@
 #!/bin/bash
-BIN=$(cd "$(dirname "$0")"; pwd)
+BIN=$(brew --prefix ruby@2.5)/bin
 PREFIX=$(dirname $BIN)
 LIB_PATH=$(dirname $PREFIX)
 
