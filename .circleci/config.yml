@@ -22,24 +22,9 @@ jobs:
           key: v3-homebrew-{{ epoch }}
           paths:
             - /usr/local/Homebrew
-  "Excute install on Ubuntu":
-    docker:
-      - image: circleci/ruby:2.5
-    environment:
-      LC_ALL: en_US.UTF-8
-      LANG: en_US.UTF-8
-      TERM: dumb
-    steps:
-      - checkout
-      - run: ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"  </dev/null
-      - run: eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-      - run: brew install ruby@2.5
-      - run: ./install ~/.fastlane
-      - run: ~/.fastlane/bin/fastlane --version
 
 workflows:
   version: 2
   build:
     jobs:
       - "Execute install on macOS (Xcode 11.2.0)"
-      - "Excute install on Ubuntu"
