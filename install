@@ -1,8 +1,8 @@
 #!/bin/bash
 
-INSTALL_PATH=$1
+INSTALL_PATH="$1/bin"
 
-mkdir -p "$INSTALL_PATH/bin"
+mkdir -p $INSTALL_PATH
 
 cp "bundle-env" $INSTALL_PATH
 cp "fastlane" $INSTALL_PATH
