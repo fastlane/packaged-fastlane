@@ -1,9 +1,9 @@
 version: 2
 
 jobs:
-  "Execute tests on macOS (Xcode 11.0.0)":
+  "Execute install on macOS (Xcode 11.2)":
     macos:
-      xcode: "11.0.0"
+      xcode: "11.2"
     environment:
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
@@ -14,6 +14,27 @@ jobs:
           keys:
             - v3-homebrew-{{ epoch }}
             - v3-homebrew
+      - run: echo 'chruby ruby-2.6' >> ~/.bash_profile
+      - run: ./install ~/.fastlane
+      - run: ~/.fastlane/bin/fastlane --version
+      - save_cache:
+          key: v3-homebrew-{{ epoch }}
+          paths:
+            - /usr/local/Homebrew
+  "Excute install on Ubuntu":
+    docker:
+      - image: circleci/ruby:2.5
+    environment:
+      LC_ALL: en_US.UTF-8
+      LANG: en_US.UTF-8
+      TERM: dumb
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v3-homebrew-{{ epoch }}
+            - v3-homebrew
+      - run: sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
       - run: ./install ~/.fastlane
       - run: ~/.fastlane/bin/fastlane --version
       - save_cache:
@@ -25,4 +46,5 @@ workflows:
   version: 2
   build:
     jobs:
-      - "Execute tests on macOS (Xcode 11.0.0)"
+      - "Execute install on macOS (Xcode 11.2)"
+      - "Excute install on Ubuntu":
