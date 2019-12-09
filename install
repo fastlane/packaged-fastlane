@@ -1,7 +1,9 @@
 #!/bin/bash
 
-INSTALL_PATH="$1"
-INSTALL_BIN_PATH="$1/bin"
+FASTLANE_VERSION=$1
+
+INSTALL_PATH="$2"
+INSTALL_BIN_PATH="$2/bin"
 
 mkdir -p $INSTALL_BIN_PATH
 
@@ -9,4 +11,4 @@ cp "bundle-env" $INSTALL_PATH
 cp "fastlane" $INSTALL_BIN_PATH
 
 "$INSTALL_PATH/bundle-env" gem install bundler --no-document --env-shebang
-"$INSTALL_PATH/bundle-env" gem install fastlane --no-document --env-shebang
+"$INSTALL_PATH/bundle-env" gem install fastlane -v $FASTLANE_VERSION --no-document --env-shebang
