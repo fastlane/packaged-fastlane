@@ -34,17 +34,9 @@ jobs:
         - ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"  </dev/null && PATH="$HOME/.linuxbrew/bin:$PATH"
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v3-homebrew-{{ epoch }}
-            - v3-homebrew
       - run: brew install ruby@2.5
       - run: ./install ~/.fastlane
       - run: ~/.fastlane/bin/fastlane --version
-      - save_cache:
-          key: v3-homebrew-{{ epoch }}
-          paths:
-            - /usr/local/Homebrew
 
 workflows:
   version: 2
