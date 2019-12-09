@@ -8,13 +8,13 @@ jobs:
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
       TERM: dumb
-    # shell: /bin/bash --login -eo pipefail
     steps:
       - checkout
       - restore_cache:
           keys:
             - v3-homebrew-{{ epoch }}
             - v3-homebrew
+      - run: echo "2.4" > .ruby-version
       - run: ./install ~/.fastlane
       - run: ~/.fastlane/bin/fastlane --version
       - save_cache:
