@@ -34,7 +34,6 @@ jobs:
           keys:
             - v3-homebrew-{{ epoch }}
             - v3-homebrew
-      - run: sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
       - run: ./install ~/.fastlane
       - run: ~/.fastlane/bin/fastlane --version
       - save_cache:
