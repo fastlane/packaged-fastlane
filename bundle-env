@@ -3,6 +3,8 @@ BIN=$(brew --prefix ruby@2.5)/bin
 PREFIX=$(dirname $BIN)
 LIB_PATH=$(dirname $PREFIX)
 
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 export FASTLANE_SELF_CONTAINED=true
 export FASTLANE_INSTALLED_VIA_HOMEBREW=true
 
@@ -16,24 +18,19 @@ unset GEM_CACHE
 # Now define env variables that we need for the standalone installation to work and override where
 # necessary.
 
+GEM_DIRECTORY="$CURRENT_DIR/gems"
+GEM_DIRECTORY_BIN="$GEM_DIRECTORY/bin"
+
+mkdir -p $GEM_DIRECTORY
+
 export PATH=$BIN:$PATH
+export PATH=$GEM_DIRECTORY_BIN:$PATH
+
+export GEM_HOME=$GEM_DIRECTORY
 
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-
-if [ "$FASTLANE_SELF_CONTAINED" = "true" ]; then
-  # Tell Ruby where to find the gems
-  # we just want to look for gems inside the bundle
-  export GEM_PATH=$LIB_PATH/bundle/bin
-else
-  # set EXCLUDE_SYSTEM_GEMS to "true" when running command *only* on the bundled gem set
-  # otherwise, this will make the user's existing gems available to the bundle
-  if [ "$EXCLUDE_SYSTEM_GEMS" != "true" ]; then
-    PARSE_ENV_PATH=$LIB_PATH/parse_env.rb
-    export GEM_PATH=$($BIN/ruby $PARSE_ENV_PATH)
-  fi
-fi
 
 # Suppress errors relating to native extensions in the user's gemset.
 exec "$@" 2> >(grep -v '^Ignoring .* because its extensions are not built.  Try: gem pristine .* --version .*')

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+INSTALL_PATH=$1
+
+mkdir -p "$INSTALL_PATH/bin"
+
+cp "bundle-env" $INSTALL_PATH
+cp "fastlane" $INSTALL_PATH
+
+"$INSTALL_PATH/bundle-env" gem install bundler --no-document --env-shebang
+"$INSTALL_PATH/bundle-env" gem install fastlane --no-document --env-shebang
