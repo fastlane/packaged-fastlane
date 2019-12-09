@@ -31,7 +31,8 @@ jobs:
       TERM: dumb
     steps:
       - checkout
-      - run: ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"  </dev/null && PATH="$HOME/.linuxbrew/bin:$PATH"
+      - run: ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"  </dev/null"
+      - run: eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
       - run: brew install ruby@2.5
       - run: ./install ~/.fastlane
       - run: ~/.fastlane/bin/fastlane --version
