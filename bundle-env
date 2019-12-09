@@ -2,7 +2,6 @@
 BIN=$(brew --prefix ruby@2.5)/bin
 PREFIX=$(dirname $BIN)
 LIB_PATH=$(dirname $PREFIX)
-
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 export FASTLANE_SELF_CONTAINED=true
@@ -15,9 +14,7 @@ unset GEM_HOME
 unset GEM_PATH
 unset GEM_CACHE
 
-# Now define env variables that we need for the standalone installation to work and override where
-# necessary.
-
+# CURRENT_DIR is the bin directory
 GEM_DIRECTORY="$CURRENT_DIR/gems"
 GEM_DIRECTORY_BIN="$GEM_DIRECTORY/bin"
 
@@ -26,6 +23,7 @@ mkdir -p $GEM_DIRECTORY
 export PATH=$BIN:$PATH
 export PATH=$GEM_DIRECTORY_BIN:$PATH
 
+export GEM_PATH=$GEM_DIRECTORY
 export GEM_HOME=$GEM_DIRECTORY
 
 export LANG=en_US.UTF-8

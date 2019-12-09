@@ -13,8 +13,8 @@ function gem_cleanup() {
 }
 
 if [ "$1" = "update_fastlane" ]; then
-  "${DIR}/bundle-env" gem update --no-document fastlane
+  "${DIR}/../bundle-env" gem update --no-document fastlane
   gem_cleanup
 else
-  exec "${DIR}/bundle-env" fastlane "$@"
+  exec "${DIR}/../bundle-env" fastlane "$@"
 fi;
