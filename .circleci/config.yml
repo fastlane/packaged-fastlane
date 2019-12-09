@@ -47,4 +47,4 @@ workflows:
   build:
     jobs:
       - "Execute install on macOS (Xcode 11.2)"
-      - "Excute install on Ubuntu":
+      - "Excute install on Ubuntu"
