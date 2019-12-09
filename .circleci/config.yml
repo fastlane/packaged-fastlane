@@ -16,7 +16,7 @@ jobs:
             - v3-homebrew
       - run: echo 'chruby ruby-2.6' >> ~/.bash_profile
       - run: brew install ruby@2.5
-      - run: ./install ~/.fastlane
+      - run: ./install 2.137.0 ~/.fastlane
       - run: ~/.fastlane/bin/fastlane --version
       - save_cache:
           key: v3-homebrew-{{ epoch }}
