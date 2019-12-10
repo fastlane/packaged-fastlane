@@ -13,8 +13,7 @@ function gem_cleanup() {
 }
 
 if [ "$1" = "update_fastlane" ]; then
-  "${DIR}/../bundle-env" gem update --no-document fastlane
-  gem_cleanup
+  echo "😱 'fastlane update_fastlane' is deprecated... Please run 'brew upgrade fastlane' to update fastlane"
 else
   exec "${DIR}/../bundle-env" fastlane "$@"
 fi;
