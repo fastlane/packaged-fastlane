@@ -1,130 +1,14 @@
 #!/bin/bash
 
-# Colored output using https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
+FASTLANE_VERSION=$1
 
-CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "$CURRENT_DIR/common.sh"
+INSTALL_PATH="$2"
+INSTALL_BIN_PATH="$2/bin"
 
-usage() {
-  echo "./install [-u] [-p] [-b]"
-  echo "    -u : Uninstall fastlane if it exists in $FASTLANE_DIR"
-  echo "    -p : Don't update the path automatically"
-  echo "    -b : Installed via homebrew"
-  exit 1
-}
+mkdir -p $INSTALL_BIN_PATH
 
-INSTALLED_VIA_HOMEBREW=false
+cp "bundle-env" $INSTALL_PATH
+cp "fastlane" $INSTALL_BIN_PATH
 
-while getopts ":pub" opt; do
-  case $opt in
-    p ) SKIP_SETTING_PATH=1;;
-    u ) DO_UNINSTALL=1;;
-    b ) INSTALLED_VIA_HOMEBREW=true;;
-    * ) usage ;;
-  esac
-done
-
-if [ -d "$FASTLANE_DIR" ]; then
-  echoc "fastlane is already installed at $FASTLANE_DIR" yellow
-  if [ "$DO_UNINSTALL" == "1" ]; then
-    choice="y"
-  else
-    read -p "Do you want to reinstall fastlane? The old directory, including any changes you made, will be removed! (y/N) " -n 1 choice
-    echo ""
-  fi
-
-  case $choice in
-    y|Y )
-      echoc "The installer will now run the uninstall script to remove your existing fastlane bundle..." magenta
-
-      if [ "$DO_UNINSTALL" == "1" ]; then
-        "$CURRENT_DIR/uninstall" -y
-      else
-        "$CURRENT_DIR/uninstall"
-      fi
-
-      if [[ $? != 0 ]]; then
-        echoc "There was a problem uninstalling the previous fastlane bundle, aborting installation..." red
-        exit 1
-      fi
-      echoc "Done uninstalling, your regular installation will now commence. 🚕 💨" green
-      ;;
-    * )
-      echoc "Installation aborted, nothing to be done!" green
-      exit 1
-      ;;
-  esac
-fi
-
-# Copy fastlane to ~/.fastlane
-echoc "Installing fastlane to $FASTLANE_DIR... this might take a few seconds" yellow
-mkdir -p $FASTLANE_DIR
-# We have to skip the 2 error messages below, which are shown if a previous version of fastlane
-# was installed via the bundle
-cp -R "$CURRENT_DIR/fastlane_lib/" $FASTLANE_DIR
-cp "$CURRENT_DIR/NOTICE.txt" "$FASTLANE_DIR/.."
-cp "$CURRENT_DIR/THIRDPARTYLICENSES.txt" "$FASTLANE_DIR/.."
-
-echoc "Successfully copied fastlane to $FASTLANE_DIR" green
-echo ""
-
-# Set the FASTLANE_INSTALLED_VIA_HOMEWBREW flag in bundle-env
-BUNDLE_ENV_PATH="$FASTLANE_DIR/bundle/bin/bundle-env"
-sed -i '' "s/{{IS_INSTALLED_VIA_HOMEBREW}}/$INSTALLED_VIA_HOMEBREW/g" $BUNDLE_ENV_PATH
-
-# Update the contained fastlane install
-reset_color
-"$FASTLANE_DIR/fastlane" update_fastlane
-
-manual_installation() {
-  echoc "Please add the following line to your $shell profile:" yellow
-  set_color cyan
-  echo -e "$1"
-  reset_color
-  echoc "After doing so close the terminal session and restart it to start using fastlane  🚀" green
-}
-
-# check if it's already in the user's path
-echo $PATH | grep -o $FASTLANE_DIR > /dev/null
-if [ $? -ne 0 ]; then
-  export LINE_TO_ADD="\nexport PATH=\"$FASTLANE_DIR_RAW:\$PATH\"\n"
-
-  if [[ "$shell" == "fish" ]]; then
-    LINE_TO_ADD="set -x PATH $FASTLANE_DIR_RAW \$PATH" # fish has its own way of setting variables
-  fi
-
-  if [ -f $profile_expanded ]; then
-    echoc "Detected shell config file at path '$profile'" yellow
-
-    if [ "$SKIP_SETTING_PATH" == "1" ]; then
-      manual_installation "$LINE_TO_ADD"
-      exit 0
-    fi
-
-    echoc "We can add the following line to your shell config" yellow
-    echoc "so you can run fastlane from any directory on your machine" yellow
-    set_color cyan
-    echo -e "$LINE_TO_ADD"
-    reset_color
-    set_color yellow
-    read -p "Do you want fastlane to add itself to the PATH by updating your profile? (y/n) " -n 1 choice
-    reset_color
-    case "$choice" in
-      y|Y )
-        echo ""
-        echo -e $LINE_TO_ADD >> $profile_expanded
-        echoc "Successfully updated $profile" green
-        echoc "Please close the terminal session and restart it to start using fastlane 🚀" green
-    ;;
-      * )
-        echo ""
-        manual_installation "$LINE_TO_ADD"
-    ;;
-    esac
-  else
-    echoc "Couldn't detect shell config file ($shell - $profile)" red
-    manual_installation "$LINE_TO_ADD"
-  fi
-else
-  echoc "Detected fastlane is already in your path 🚀" green
-fi
+"$INSTALL_PATH/bundle-env" gem install bundler --no-document --env-shebang
+"$INSTALL_PATH/bundle-env" gem install fastlane -v $FASTLANE_VERSION --no-document --env-shebang

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+
+function gem_cleanup() {
+  EXCLUDE_SYSTEM_GEMS="true" "${DIR}/bundle-env" gem cleanup
+}
+
+if [ "$1" = "update_fastlane" ]; then
+  echo "😱 'fastlane update_fastlane' is deprecated... Please run 'brew upgrade fastlane' to update fastlane"
+else
+  exec "${DIR}/../bundle-env" fastlane "$@"
+fi;
